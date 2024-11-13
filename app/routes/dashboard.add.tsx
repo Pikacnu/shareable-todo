@@ -27,7 +27,7 @@ export default function Add() {
 	const [endDatetime, setEndDatetime] = useState(
 		new Date().toISOString().slice(0, 16),
 	);
-	const addTodo = useFetcher()
+	const addTodo = useFetcher();
 	const submit = (
 		title: string,
 		description: string,
@@ -36,16 +36,20 @@ export default function Add() {
 		endDatetime: string,
 		selectedItems: TodoListInfo[],
 	) => {
-		() => {
-			const formData = new FormData();
-			formData.append('title', title);
-			formData.append('description', description);
-			formData.append('isToday', isToday.toString());
-			formData.append('startDatetime', startDatetime);
-			formData.append('endDatetime', endDatetime);
-			formData.append('selectedItems', JSON.stringify(selectedItems));
-			addTodo.submit(formData, { method: 'post',action:'/api/todo'});
-		};
+		if (title.length < 3)
+			return alert('Title must be at least 3 characters long');
+		const formData = new FormData();
+		Object.entries({
+			title,
+			description,
+			isToday,
+			startDatetime,
+			endDatetime,
+			selectedItems,
+		}).forEach(([key, value]) => {
+			formData.append(key, value.toString());
+		});
+		addTodo.submit(formData, { method: 'post', action: '/api/todo' });
 	};
 	const clearTempData = () => {
 		setTitle('');
@@ -109,7 +113,9 @@ export default function Add() {
 							</label>
 						</div>
 						<div
-							className={'flex space-x-3 justify-center'+(isToday?' hidden':'')}
+							className={
+								'flex space-x-3 justify-center flex-wrap items-center ' + (isToday ? ' hidden' : '')
+							}
 						>
 							<div>
 								<label htmlFor='startDateTime'>Start Date</label>
@@ -207,7 +213,14 @@ export default function Add() {
 				<div className='bg-white text-black flex flex-row justify-between *:m-2 rounded-lg p-2'>
 					<button
 						onClick={() => {
-							submit(title, description, isToday, startDatetime,endDatetime, selectedItems);
+							submit(
+								title,
+								description,
+								isToday,
+								startDatetime,
+								endDatetime,
+								selectedItems,
+							);
 							clearTempData();
 						}}
 					>
@@ -215,7 +228,14 @@ export default function Add() {
 					</button>
 					<button
 						onClick={() =>
-							submit(title, description, isToday, startDatetime,endDatetime, selectedItems)
+							submit(
+								title,
+								description,
+								isToday,
+								startDatetime,
+								endDatetime,
+								selectedItems,
+							)
 						}
 					>
 						add others with same option

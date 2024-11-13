@@ -1,9 +1,9 @@
 import { Authenticator } from 'remix-auth';
 import { sessionStorage } from './session.server';
 import { DiscordStrategy } from 'remix-auth-discord';
-import { AuthType } from './auth.type';
+import { AuthType,UserData } from './auth.type';
 
-export const authenticator = new Authenticator(sessionStorage);
+export const authenticator = new Authenticator<UserData>(sessionStorage);
 
 const callbackURL = (providor: AuthType) => `${process.env.URL}/auth/${providor}/callback`;
 
@@ -16,8 +16,8 @@ authenticator.use(
 			scope: ['identify', 'email'],
 		},
 		async (profile) => {
-			const user = {
-				name: profile.profile.name,
+			const user:UserData = {
+				name: profile.profile.displayName,
 				email: profile.profile.emails![0].value,
 			};
 			return user;
