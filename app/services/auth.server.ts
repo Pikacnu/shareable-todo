@@ -1,11 +1,14 @@
 import { Authenticator } from 'remix-auth';
 import { sessionStorage } from './session.server';
 import { DiscordStrategy } from 'remix-auth-discord';
-import { AuthType,UserData } from './auth.type';
+import { AuthType, UserData } from './auth.type';
+import { db } from './db.server';
+import { user } from 'db/schema';
 
 export const authenticator = new Authenticator<UserData>(sessionStorage);
 
-const callbackURL = (providor: AuthType) => `${process.env.URL}/auth/${providor}/callback`;
+const callbackURL = (providor: AuthType) =>
+	`${process.env.URL}/auth/${providor}/callback`;
 
 authenticator.use(
 	new DiscordStrategy(
@@ -16,11 +19,15 @@ authenticator.use(
 			scope: ['identify', 'email'],
 		},
 		async (profile) => {
-			const user:UserData = {
+			const userData: UserData = {
 				name: profile.profile.displayName,
 				email: profile.profile.emails![0].value,
 			};
-			return user;
+			db.insert(user).values({
+				email: profile.profile.emails![0].value,
+				name: profile.profile.displayName,
+			});
+			return userData;
 		},
 	),
 );

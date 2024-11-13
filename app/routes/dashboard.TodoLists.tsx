@@ -1,4 +1,4 @@
-import { DropList } from '~/componments/tododroplist';
+import { DropList, ShareStatus } from '~/componments/tododroplist';
 
 export default function TodoLists() {
 	return (
@@ -19,8 +19,9 @@ export default function TodoLists() {
 								finished: false,
 							},
 						],
+						shareStatus: ShareStatus.Private,
 					},
-          {
+					{
 						id: 2,
 						title: 'List 2',
 						description: 'List 2 description',
@@ -34,6 +35,7 @@ export default function TodoLists() {
 								finished: true,
 							},
 						],
+						shareStatus: ShareStatus.Public,
 					},
 				]}
 			/>

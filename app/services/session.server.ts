@@ -11,11 +11,5 @@ export const sessionStorage = createCookieSessionStorage({
 		secure: process.env.NODE_ENV === 'production', // enable this in prod only
 	},
 });
-//
-//function createDatabaseSessionStorage() {
-//	async createData(data,expires){
-//		db.insert
-//	}
-//}
 
 export const { getSession, commitSession, destroySession } = sessionStorage;

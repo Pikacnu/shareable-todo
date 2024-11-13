@@ -14,10 +14,15 @@ export default function Dashboard() {
 			<div className='flex flex-grow m-4 '>
 				<Outlet />
 			</div>
-			<div className='m-4 p-4 h-[80%] bg-white rounded-3xl text-black flex flex-col items-center *:mt-4'>
-				<Link to={'/dashboard'}>Dashboard</Link>
-				<Link to={'/dashboard/add'}>Add</Link>
-				<Link to={'/dashboard/todoLists'}>Todo</Link>
+			<div className='m-4 p-4 h-[80%] bg-white rounded-3xl text-black flex flex-col justify-between'>
+				<div className='flex flex-col items-center *:mt-4'>
+					<Link to={'/dashboard'}>Dashboard</Link>
+					<Link to={'/dashboard/add'}>Add</Link>
+					<Link to={'/dashboard/todoLists'}>Todo</Link>
+				</div>
+				<div>
+					<Link to={'/logout'}>Logout</Link>
+				</div>
 			</div>
 		</div>
 	);
