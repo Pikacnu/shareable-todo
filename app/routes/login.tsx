@@ -14,7 +14,7 @@ function LoginWith({ providor }: { providor: AuthType }) {
 	);
 }
 
-export function loader({ request }:LoaderFunctionArgs) {
+export function loader({ request }: LoaderFunctionArgs) {
 	return authenticator.isAuthenticated(request, {
 		successRedirect: '/dashboard',
 	});
@@ -22,9 +22,9 @@ export function loader({ request }:LoaderFunctionArgs) {
 
 export default function Login() {
 	return (
-		<div className='flex flex-col *:m-2 rounded-2xl m-16 shadow-sm shadow-gray-800 bg-gray-800'>
-			<h1>Login</h1>
-			{LoginWith({ providor: AuthType.Discord })}
+		<div className='flex flex-col *:m-2 rounded-2xl m-16 shadow-sm shadow-gray-800 bg-gray-800 min-w-[30%] min-h-[80%] items-center'>
+			<h1 className=' text-2xl'>Login</h1>
+			<div>{LoginWith({ providor: AuthType.Discord })}</div>
 		</div>
 	);
 }

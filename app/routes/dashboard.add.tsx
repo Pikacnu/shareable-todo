@@ -1,7 +1,5 @@
-import { ActionFunctionArgs } from '@remix-run/node';
 import { useState } from 'react';
 import { useFetcher } from 'react-router-dom';
-import { authenticator } from '~/services/auth.server';
 
 export const meta = () => {
 	return [
@@ -23,15 +21,19 @@ export default function Add() {
 	const [isToday, setIsToday] = useState(false);
 	const [selectedItems, setSelectedItems] = useState<TodoListInfo[]>([]);
 	const [selectIndex, setSelectIndex] = useState(0);
-	const [datetime, setDatetime] = useState(
+	const [startDatetime, setStartDatetime] = useState(
 		new Date().toISOString().slice(0, 16),
 	);
-	const addTodo = useFetcher();
+	const [endDatetime, setEndDatetime] = useState(
+		new Date().toISOString().slice(0, 16),
+	);
+	const addTodo = useFetcher()
 	const submit = (
 		title: string,
 		description: string,
 		isToday: boolean,
-		datetime: string,
+		startDatetime: string,
+		endDatetime: string,
 		selectedItems: TodoListInfo[],
 	) => {
 		() => {
@@ -39,10 +41,10 @@ export default function Add() {
 			formData.append('title', title);
 			formData.append('description', description);
 			formData.append('isToday', isToday.toString());
-			formData.append('datetime', datetime);
+			formData.append('startDatetime', startDatetime);
+			formData.append('endDatetime', endDatetime);
 			formData.append('selectedItems', JSON.stringify(selectedItems));
-
-			addTodo.submit(formData, { method: 'post' });
+			addTodo.submit(formData, { method: 'post',action:'/api/todo'});
 		};
 	};
 	const clearTempData = () => {
@@ -51,7 +53,8 @@ export default function Add() {
 		setIsToday(false);
 		setSelectedItems([]);
 		setSelectIndex(0);
-		setDatetime(new Date().toISOString().slice(0, 16));
+		setStartDatetime(new Date().toISOString().slice(0, 16));
+		setEndDatetime(new Date().toISOString().slice(0, 16));
 	};
 
 	const todolists: TodoListInfo[] = [
@@ -74,18 +77,19 @@ export default function Add() {
 
 	return (
 		<div className='flex flex-row w-full m-4 h-[80vh] justify-between *:w-1/2 *:m-4'>
-			<div className='flex flex-col p-8 bg-slate-500 shadow-xl shadow-slate-500 rounded-xl justify-between'>
+			<div className='flex flex-col p-8 bg-slate-500  rounded-xl justify-between'>
 				<div>
-					<div className='flex flex-col  *:m-2'>
+					<div className='flex flex-col *:m-2 h-full'>
 						<input
 							type='text'
 							placeholder='Title'
 							value={title}
+							minLength={3}
 							onChange={(e) => setTitle(e.target.value)}
 						/>
 						<textarea
 							placeholder='Description'
-							className=' resize-none'
+							className=' resize-none h-[60%]'
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
 						/>
@@ -97,13 +101,36 @@ export default function Add() {
 								checked={isToday}
 								onChange={(e) => setIsToday(e.target.checked)}
 							/>
-							<label htmlFor='Today'>Is add for today?</label>
-							<input
-								disabled={!isToday}
-								type='datetime-local'
-								value={datetime}
-								onChange={(e) => setDatetime(e.target.value)}
-							/>
+							<label
+								htmlFor='Today'
+								className=' select-none'
+							>
+								Is only for today?
+							</label>
+						</div>
+						<div
+							className={'flex space-x-3 justify-center'+(isToday?' hidden':'')}
+						>
+							<div>
+								<label htmlFor='startDateTime'>Start Date</label>
+								<input
+									disabled={isToday}
+									type='datetime-local'
+									name='startDateTime'
+									value={startDatetime}
+									onChange={(e) => setStartDatetime(e.target.value)}
+								/>
+							</div>
+							<div>
+								<label htmlFor='endDateTime'>End Date</label>
+								<input
+									disabled={isToday}
+									type='datetime-local'
+									name='endDateTime'
+									value={startDatetime}
+									onChange={(e) => setEndDatetime(e.target.value)}
+								/>
+							</div>
 						</div>
 					</div>
 					<div className='flex flex-col'>
@@ -177,18 +204,18 @@ export default function Add() {
 						</p>
 					</div>
 				</div>
-				<div className='bg-white text-black flex flex-row justify-between *:m-2'>
+				<div className='bg-white text-black flex flex-row justify-between *:m-2 rounded-lg p-2'>
 					<button
 						onClick={() => {
-							submit(title, description, isToday, datetime, selectedItems);
-							clearTempData;
+							submit(title, description, isToday, startDatetime,endDatetime, selectedItems);
+							clearTempData();
 						}}
 					>
 						add
 					</button>
 					<button
 						onClick={() =>
-							submit(title, description, isToday, datetime, selectedItems)
+							submit(title, description, isToday, startDatetime,endDatetime, selectedItems)
 						}
 					>
 						add others with same option
@@ -202,10 +229,3 @@ export default function Add() {
 		</div>
 	);
 }
-
-export const action = async ({ request }: ActionFunctionArgs) => {
-	const formData = await request.formData();
-	const title = formData.get('title');
-	const test = authenticator.isAuthenticated(request);
-	console.log(test, title);
-};
