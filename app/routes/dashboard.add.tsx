@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useFetcher } from 'react-router-dom';
+import loader from './logout';
 
 export const meta = () => {
 	return [
@@ -13,6 +14,10 @@ interface TodoListInfo {
 	id: number;
 	title: string;
 	description: string;
+}
+
+export function loader(request: Request) {
+	
 }
 
 export default function Add() {

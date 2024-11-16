@@ -3,3 +3,7 @@ node_modules
 /.cache
 /build
 .env
+
+/db/migrations/*
+/db/migrations/*/*
+/db/migrations/*/*/*

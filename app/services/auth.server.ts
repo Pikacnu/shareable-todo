@@ -23,10 +23,16 @@ authenticator.use(
 				name: profile.profile.displayName,
 				email: profile.profile.emails![0].value,
 			};
-			db.insert(user).values({
-				email: profile.profile.emails![0].value,
-				name: profile.profile.displayName,
-			});
+			await db
+				.insert(user)
+				.values({
+					email: profile.profile.emails![0].value,
+					name: profile.profile.displayName,
+				})
+				.returning({
+					id: user.id,
+					name: user.name,
+				});
 			return userData;
 		},
 	),

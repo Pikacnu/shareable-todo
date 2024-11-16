@@ -7,12 +7,13 @@ import {
 	boolean,
 	pgEnum,
 	unique,
+	integer,
 } from 'drizzle-orm/pg-core';
 
 export const shareStatus = pgEnum('shareStatus', ['private', 'public']);
 export const userRole = pgEnum('userRole', ['admin', 'user']);
 
-export const user = pgTable('user', {
+export const user = pgTable('userdata', {
 	id: serial('id').primaryKey(),
 	name: text('name').notNull(),
 	email: text('email').notNull(),
@@ -24,22 +25,32 @@ export const list = pgTable(
 	{
 		id: serial('id').primaryKey(),
 		title: text('title').notNull(),
-		owner_id: serial('owner_id')
+		description: text('description').default(''),
+		owner_id: integer('owner_id')
 			.notNull()
 			.references(() => user.id),
 		shareStatus: shareStatus('shareStatus').default('private'),
-		shareWith: text('shareWith').default(sql`'{}'::text[]`),
+		shareWith: integer('shareWith')
+			.array()
+			.default(sql`'{}'::integer[]`),
 	},
 	(t) => ({
 		list_unique: unique('list_unq').on(t.title, t.owner_id),
 	}),
 );
 
-export const event = pgTable('event', {
+export const todoListLinkToEvent = pgTable('todoListLinkToEvent', {
 	id: serial('id').primaryKey(),
 	list_id: serial('list_id')
 		.notNull()
 		.references(() => list.id, { onDelete: 'cascade' }),
+	event_id: serial('event_id')
+		.notNull()
+		.references(() => event.id, { onDelete: 'cascade' }),
+});
+
+export const event = pgTable('event', {
+	id: serial('id').primaryKey(),
 	title: text('title').notNull(),
 	description: text('description').notNull(),
 	is_long_time: boolean('is_long_time').default(false),
