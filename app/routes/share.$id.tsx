@@ -1,23 +1,37 @@
-import { LoaderFunctionArgs } from '@remix-run/node';
-import { list, user } from 'db/schema';
-import { eq } from 'drizzle-orm';
+import {
+	LoaderFunctionArgs,
+	redirect,
+	ActionFunctionArgs,
+} from '@remix-run/node';
+import { list, ShareID, user } from 'db/schema';
+import { and, eq } from 'drizzle-orm';
 import { getUserDataByRequest } from '~/function/getUserData';
 import { db } from '~/services/db.server';
-import { useLoaderData } from '@remix-run/react';
+import { useFetcher, useLoaderData } from '@remix-run/react';
+import { ShareStatus } from '~/componments/tododroplist';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-	const id = parseInt(params.id || '');
-	if (id === undefined || isNaN(id)) {
-		return new Response('Not Found', { status: 404 });
+	const id = params.id;
+	if (id === undefined) {
+		return redirect('/dashboard');
 	}
 	try {
 		const userData = await getUserDataByRequest(request);
 		if (userData === null) {
-			return new Response('Unauthorized', { status: 401 });
+			return redirect('/dashboard');
 		}
-		const todolist = (await db.select().from(list).where(eq(list.id, id)))[0];
-		let isOwner = false;
-		if (todolist.owner_id !== userData.id) isOwner = true;
+		const todolist = (
+			await db
+				.select()
+				.from(ShareID)
+				.leftJoin(list, eq(ShareID.list_id, list.id))
+				.where(eq(ShareID.share_id, id))
+		)[0].list;
+		if (!todolist) {
+			return redirect('/dashboard');
+		}
+		let isOwner = true;
+		if (todolist.owner_id !== userData.id) isOwner = false;
 		let ownerName;
 		if (!isOwner) {
 			ownerName = (
@@ -28,33 +42,80 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 			)[0].username;
 		}
 		return {
-			user: {
-				username: user.name,
-			},
+			username: userData.name,
 			isOwner: isOwner,
-			owner: ownerName || '',
-			todolist: {
-				title: todolist.title,
-				description: todolist.description,
-			},
+			ownerName: ownerName || '',
+			title: todolist.title,
+			description: todolist.description,
+			id: id,
 		};
 	} catch (e) {
 		console.error(e);
-		return new Response('Internal Server Error', { status: 500 });
+		return redirect('/dashboard');
 	}
 };
 
 export default function ShareTo() {
-	const { user, isOwner, ownerName, todolist } = useLoaderData<typeof loader>();
+	const { username, isOwner, ownerName, title, id } =
+		useLoaderData<typeof loader>();
+	const Fetcher = useFetcher();
 	return (
-		<div>
+		<div className=' m-4 p-4 bg-gray-600 shadow-lg rounded-lg flex flex-col items-center justify-center'>
 			<h1>
-				{isOwner ? 'Owner' : ownerName} Share {todolist.title} to{' '}
-				{user.username}
+				{isOwner ? 'You' : ownerName} Share {title} to {username}
 			</h1>
-      <button>
-        Add TodoList
-      </button>
+			<button
+				className=' m-4 outline outline-1 outline-offset-4 outline-black rounded-md'
+				onClick={() => {
+					const formData = new FormData();
+					formData.append('share_id', id);
+					Fetcher.submit(formData, {
+						method: 'POST',
+					});
+				}}
+			>
+				Add TodoList
+			</button>
 		</div>
 	);
 }
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+	const userData = await getUserDataByRequest(request);
+	if (userData === null) {
+		return redirect('/dashboard');
+	}
+	const from = await request.formData();
+	const share_id = from.get('share_id') as string;
+	if (share_id === null) {
+		return redirect('/dashboard');
+	}
+	const temp = (
+		await db
+			.select()
+			.from(ShareID)
+			.leftJoin(
+				list,
+				and(
+					eq(ShareID.list_id, list.id),
+					eq(list.shareStatus, ShareStatus.Public),
+				),
+			)
+			.where(eq(ShareID.share_id, share_id))
+	)[0];
+	if (!temp) {
+		return redirect('/dashboard');
+	}
+	const listinfo = temp.list;
+	if (!listinfo) {
+		return redirect('/dashboard');
+	}
+	if (listinfo.owner_id === userData.id) {
+		return redirect('/dashboard');
+	}
+	await db
+		.update(list)
+		.set({ shareWith: [...(listinfo.shareWith || []), userData.id] })
+		.where(eq(list.id, listinfo.id));
+	return redirect(`/dashboard`);
+};

@@ -26,11 +26,12 @@ export type TodoList = TodoListInfo & {
 	shareStatus: ShareStatus;
 };
 
-export type TodoListWithOwnerInfo = TodoList & {
+export type TodoListWithListInfo = TodoList & {
 	isOwner: boolean;
+	shareId: string;
 };
 
-export function DropList({ todoList }: { todoList: TodoListWithOwnerInfo[] }) {
+export function DropList({ todoList }: { todoList: TodoListWithListInfo[] }) {
 	//const fetcher = useFetcher();
 	const [todoOpenState, setTodoOpenState] = useState<
 		{
@@ -70,7 +71,27 @@ export function DropList({ todoList }: { todoList: TodoListWithOwnerInfo[] }) {
 									{!isOpen ? 'Open' : 'Close'}
 								</button>
 								{todoList.shareStatus === ShareStatus.Public ? (
-									<button>Share</button>
+									<button
+										onClick={() => {
+											if (!todoList.shareId) {
+												const formData = new FormData();
+												formData.append('list_id', todoList.id.toString());
+												Fetcher.submit(formData, {
+													action: '/api/share',
+													method: 'POST',
+												});
+												return;
+											}
+											if (navigator) {
+												navigator.clipboard.writeText(
+													`http://localhost:5173/share/${todoList.shareId}`,
+												);
+												alert('copy to your clipboard');
+											}
+										}}
+									>
+										Share
+									</button>
 								) : (
 									''
 								)}

@@ -66,3 +66,11 @@ export const session = pgTable('session', {
 		.references(() => user.id),
 	expires: timestamp('expires').notNull(),
 });
+
+export const ShareID = pgTable('ShareID', {
+	id: serial('id').primaryKey(),
+	share_id: text('share_id').notNull(),
+	list_id: serial('list_id')
+		.notNull()
+		.references(() => list.id, { onDelete: 'cascade' }),
+});

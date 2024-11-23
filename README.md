@@ -4,8 +4,8 @@
 This project is still on development
 Not all things is functional
 
-- [o] Own TodoList
-- [x] Shareable
+- [ ] Own TodoList
+- [ ] Shareable
 - [x] Personal Finish State
 - [x] Auto Remove Todo
 - [x] Repeat Todo(maybe will added in feature)

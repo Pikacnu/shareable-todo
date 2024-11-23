@@ -1,5 +1,5 @@
-import { ShareStatus, TodoListWithOwnerInfo } from '~/componments/tododroplist';
-import { user, list, event, todoListLinkToEvent } from 'db/schema';
+import { ShareStatus, TodoListWithListInfo } from '~/componments/tododroplist';
+import { user, list, event, todoListLinkToEvent, ShareID } from 'db/schema';
 import { eq, arrayOverlaps, or } from 'drizzle-orm';
 import { db } from '~/services/db.server';
 import { authenticator } from '~/services/auth.server';
@@ -12,9 +12,10 @@ export const getTodoLists = async (userID: number) => {
 			or(eq(list.owner_id, userID), arrayOverlaps(list.shareWith, [userID])),
 		)
 		.leftJoin(todoListLinkToEvent, eq(list.id, todoListLinkToEvent.list_id))
-		.leftJoin(event, eq(todoListLinkToEvent.event_id, event.id));
-	const todoLists: TodoListWithOwnerInfo[] = todoListsData.reduce(
-		(acc: TodoListWithOwnerInfo[], todoListData: (typeof todoListsData)[0]) => {
+		.leftJoin(event, eq(todoListLinkToEvent.event_id, event.id))
+		.leftJoin(ShareID, eq(list.id, ShareID.list_id));
+	const todoLists: TodoListWithListInfo[] = todoListsData.reduce(
+		(acc: TodoListWithListInfo[], todoListData: (typeof todoListsData)[0]) => {
 			if (acc.some((accTodoList) => accTodoList.id === todoListData.list.id)) {
 				acc
 					.find((accTodoList) => accTodoList.id === todoListData.list.id)
@@ -34,6 +35,7 @@ export const getTodoLists = async (userID: number) => {
 				acc.push({
 					id: todoListData.list.id,
 					title: todoListData.list.title,
+					shareId: todoListData.ShareID?.share_id || '',
 					Todo: todoListData.event
 						? [
 								{
@@ -50,7 +52,8 @@ export const getTodoLists = async (userID: number) => {
 									).toISOString(),
 									finished: false,
 								},
-							]
+								// eslint-disable-next-line no-mixed-spaces-and-tabs
+						  ]
 						: [],
 					isOwner: todoListData.list.owner_id === userID,
 					shareStatus: todoListData.list.shareStatus as ShareStatus,
