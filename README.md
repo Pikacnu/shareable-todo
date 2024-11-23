@@ -1,3 +1,17 @@
+
+## Important
+
+This project is still on development
+Not all things is functional
+
+- [o] Own TodoList
+- [x] Shareable
+- [x] Personal Finish State
+- [x] Auto Remove Todo
+- [x] Repeat Todo(maybe will added in feature)
+- [x] Calendar Display
+- [x] Important Todo Display
+
 ## Install
 
 make sure you install bun before start [bun](https://bun.sh)
