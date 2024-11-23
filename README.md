@@ -4,13 +4,13 @@
 This project is still on development
 Not all things is functional
 
-- [ ] Own TodoList
-- [ ] Shareable
-- [x] Personal Finish State
-- [x] Auto Remove Todo
-- [x] Repeat Todo(maybe will added in feature)
-- [x] Calendar Display
-- [x] Important Todo Display
+- [x] Own TodoList
+- [x] Shareable
+- [ ] Personal Finish State
+- [ ] Auto Remove Todo
+- [ ] Repeat Todo(maybe will added in feature)
+- [ ] Calendar Display
+- [ ] Important Todo Display
 
 ## Install
 
