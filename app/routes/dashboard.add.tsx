@@ -1,6 +1,11 @@
 import { useState } from 'react';
-import { useFetcher } from 'react-router-dom';
-import loader from './logout';
+import { useFetcher, LoaderFunctionArgs } from 'react-router-dom';
+import { authenticator } from '~/services/auth.server';
+import { db } from '~/services/db.server';
+import { list, user } from 'db/schema';
+import { or, eq, arrayOverlaps } from 'drizzle-orm';
+import { useLoaderData } from '@remix-run/react';
+import { getTodoLists } from '~/function/getUserData';
 
 export const meta = () => {
 	return [
@@ -13,18 +18,46 @@ export const meta = () => {
 interface TodoListInfo {
 	id: number;
 	title: string;
-	description: string;
+	description: string | null;
 }
 
-export function loader(request: Request) {
-	
+export async function loader({ request }: LoaderFunctionArgs) {
+	try {
+		const userData = await authenticator.isAuthenticated(request);
+		const userInfoFromDB = (
+			await db
+				.select()
+				.from(user)
+				.where(eq(user.email, userData?.email || ''))
+		)[0];
+		const todoLists: TodoListInfo[] = await db
+			.select({
+				id: list.id,
+				title: list.title,
+				description: list.description,
+			})
+			.from(list)
+			.where(
+				or(
+					eq(list.owner_id, userInfoFromDB.id),
+					arrayOverlaps(list.shareWith, [userInfoFromDB.id]),
+				),
+			);
+		const todolistdata = await getTodoLists(userInfoFromDB.id);
+		return { todolists: todoLists, todolistdata: todolistdata };
+	} catch (e) {
+		console.error(e);
+		return { todolists: [], todolistdata: [] };
+	}
 }
 
 export default function Add() {
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
 	const [isToday, setIsToday] = useState(false);
-	const [selectedItems, setSelectedItems] = useState<TodoListInfo[]>([]);
+	const [selectedTodoLists, setselectedTodoLists] = useState<TodoListInfo[]>(
+		[],
+	);
 	const [selectIndex, setSelectIndex] = useState(0);
 	const [startDatetime, setStartDatetime] = useState(
 		new Date().toISOString().slice(0, 16),
@@ -33,16 +66,26 @@ export default function Add() {
 		new Date().toISOString().slice(0, 16),
 	);
 	const addTodo = useFetcher();
+	const clearTempData = () => {
+		setTitle('');
+		setDescription('');
+		setIsToday(false);
+		setselectedTodoLists([]);
+		setSelectIndex(0);
+		setStartDatetime(new Date().toISOString().slice(0, 16));
+		setEndDatetime(new Date().toISOString().slice(0, 16));
+	};
 	const submit = (
 		title: string,
 		description: string,
 		isToday: boolean,
 		startDatetime: string,
 		endDatetime: string,
-		selectedItems: TodoListInfo[],
+		selectedTodoLists: TodoListInfo[],
 	) => {
-		if (title.length < 3)
-			return alert('Title must be at least 3 characters long');
+		if (title === '') return alert('Title can not be blank');
+		if (selectedTodoLists.length === 0)
+			return alert('Please select a todo list');
 		const formData = new FormData();
 		Object.entries({
 			title,
@@ -50,55 +93,35 @@ export default function Add() {
 			isToday,
 			startDatetime,
 			endDatetime,
-			selectedItems,
 		}).forEach(([key, value]) => {
 			formData.append(key, value.toString());
 		});
+		formData.append(
+			'selectedTodoLists',
+			selectedTodoLists.map((item) => item.id).join(','),
+		);
 		addTodo.submit(formData, { method: 'post', action: '/api/todo' });
+		clearTempData();
 	};
-	const clearTempData = () => {
-		setTitle('');
-		setDescription('');
-		setIsToday(false);
-		setSelectedItems([]);
-		setSelectIndex(0);
-		setStartDatetime(new Date().toISOString().slice(0, 16));
-		setEndDatetime(new Date().toISOString().slice(0, 16));
-	};
-
-	const todolists: TodoListInfo[] = [
-		{
-			id: 1,
-			title: 'List 1',
-			description: 'List 1 description',
-		},
-		{
-			id: 2,
-			title: 'List 2',
-			description: 'List 2 description',
-		},
-		{
-			id: 3,
-			title: 'List 3',
-			description: 'List 3 description',
-		},
-	];
+	const { todolists, todolistdata } = useLoaderData<typeof loader>();
 
 	return (
-		<div className='flex flex-row w-full m-4 h-[80vh] justify-between *:w-1/2 *:m-4'>
-			<div className='flex flex-col p-8 bg-slate-500  rounded-xl justify-between'>
-				<div>
-					<div className='flex flex-col *:m-2 h-full'>
+		<div className='flex lg:flex-row flex-col w-full overflow-hidden m-4 h-[90vh] lg:h-[80vh] justify-between lg:*:w-1/2 *:m-4 max-w-full'>
+			<div className='flex flex-col p-8 bg-slate-500 rounded-xl justify-between h-full overflow-hidden'>
+				<div className='flex flex-col flex-grow relative max-w-full'>
+					<div className='flex flex-col *:m-2 lg:h-[50%]'>
 						<input
 							type='text'
+							className='max-w-full overflow-hidden'
 							placeholder='Title'
 							value={title}
 							minLength={3}
+							maxLength={50}
 							onChange={(e) => setTitle(e.target.value)}
 						/>
 						<textarea
 							placeholder='Description'
-							className=' resize-none h-[60%]'
+							className=' resize-none h-[10vh] lg:h-[60%] max-w-full overflow-hidden'
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
 						/>
@@ -119,10 +142,11 @@ export default function Add() {
 						</div>
 						<div
 							className={
-								'flex space-x-3 justify-center flex-wrap items-center ' + (isToday ? ' hidden' : '')
+								'flex space-x-3 justify-center flex-wrap items-center w-full lg:w-auto' +
+								(isToday ? ' hidden' : '')
 							}
 						>
-							<div>
+							<div className='flex flex-row justify-between '>
 								<label htmlFor='startDateTime'>Start Date</label>
 								<input
 									disabled={isToday}
@@ -132,13 +156,13 @@ export default function Add() {
 									onChange={(e) => setStartDatetime(e.target.value)}
 								/>
 							</div>
-							<div>
+							<div className='flex justify-between'>
 								<label htmlFor='endDateTime'>End Date</label>
 								<input
 									disabled={isToday}
 									type='datetime-local'
 									name='endDateTime'
-									value={startDatetime}
+									value={endDatetime}
 									onChange={(e) => setEndDatetime(e.target.value)}
 								/>
 							</div>
@@ -161,7 +185,8 @@ export default function Add() {
 							</option>
 							{todolists
 								.filter(
-									(item) => !selectedItems.some((list) => list.id === item.id),
+									(item) =>
+										!selectedTodoLists.some((list) => list.id === item.id),
 								)
 								.map((list) => (
 									<option
@@ -179,10 +204,12 @@ export default function Add() {
 									(item) => item.id === selectIndex,
 								);
 								setSelectIndex(0);
-								if (selectedItems.some((item) => item.id === selectedList?.id))
+								if (
+									selectedTodoLists.some((item) => item.id === selectedList?.id)
+								)
 									return;
 								if (selectedList) {
-									setSelectedItems([...selectedItems, selectedList]);
+									setselectedTodoLists([...selectedTodoLists, selectedList]);
 								}
 							}}
 						>
@@ -191,28 +218,28 @@ export default function Add() {
 						<p className='m-2'>
 							Lists are the collections of events. You can add events to lists
 							to
-							<div className='*:m-2'>
-								{selectedItems.map((list) => (
-									<div
-										key={list.id}
-										className=' flex flex-row justify-between'
-									>
-										<p>
-											{list.title} - {list.description}
-										</p>
-										<button
-											onClick={() => {
-												setSelectedItems(
-													selectedItems.filter((item) => item.id !== list.id),
-												);
-											}}
-										>
-											x
-										</button>
-									</div>
-								))}
-							</div>
 						</p>
+						<div className='*:m-2'>
+							{selectedTodoLists.map((list) => (
+								<div
+									key={list.id}
+									className=' flex flex-row justify-between'
+								>
+									<p>
+										{list.title} - {list.description}
+									</p>
+									<button
+										onClick={() => {
+											setselectedTodoLists(
+												selectedTodoLists.filter((item) => item.id !== list.id),
+											);
+										}}
+									>
+										x
+									</button>
+								</div>
+							))}
+						</div>
 					</div>
 				</div>
 				<div className='bg-white text-black flex flex-row justify-between *:m-2 rounded-lg p-2'>
@@ -224,9 +251,8 @@ export default function Add() {
 								isToday,
 								startDatetime,
 								endDatetime,
-								selectedItems,
+								selectedTodoLists,
 							);
-							clearTempData();
 						}}
 					>
 						add
@@ -239,7 +265,7 @@ export default function Add() {
 								isToday,
 								startDatetime,
 								endDatetime,
-								selectedItems,
+								selectedTodoLists,
 							)
 						}
 					>
@@ -247,9 +273,59 @@ export default function Add() {
 					</button>
 				</div>
 			</div>
-			<div className='flex flex-col w-full'>
+			<div className='flex flex-col w-full overflow-hidden'>
 				<h1>Todo</h1>
-				<div className='w-full h-full bg-white'></div>
+				<div className='w-full h-full text-black bg-white m-4 lg:m-0'>
+					{todolistdata.map((todoList) => {
+						let Todo = todoList.Todo;
+						if (selectedTodoLists.some((data) => data.id === todoList.id))
+							Todo = [
+								...todoList.Todo,
+								{
+									title,
+									description,
+									id: -1,
+									datetime: endDatetime,
+									isToday:
+										new Date(startDatetime).getDate() ===
+										new Date(endDatetime).getDate(),
+									finished: false,
+								},
+							];
+						if (Todo.length === 0) return null;
+						return (
+							<div
+								key={todoList.id}
+								className='m-4'
+							>
+								<h2 className='text-xl'>{todoList.title}</h2>
+								{Todo.map((todo) => (
+									<div
+										key={`todo-${todo.id}`}
+										className='flex flex-row bg-gray-200 *:p-2 items-center overflow-hidden relative outline outline-2'
+									>
+										<div className=' justify-between flex-grow overflow-hidden *:text-clip *:text-wrap '>
+											<p>Title : {todo.title}</p>
+											<p>Description : {todo.description}</p>
+										</div>
+										<div className='flex flex-row'>
+											<input
+												type='checkbox'
+												id={`todo-${todo.id}-finish`}
+											/>
+											<label
+												htmlFor={`todo-${todo.id}-finish`}
+												className='select-none'
+											>
+												Finished?
+											</label>
+										</div>
+									</div>
+								))}
+							</div>
+						);
+					})}
+				</div>
 			</div>
 		</div>
 	);

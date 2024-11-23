@@ -1,11 +1,12 @@
-import { DropList, ShareStatus, TodoListWithOwnerInfo } from '~/componments/tododroplist';
+import { DropList } from '~/componments/tododroplist';
+import { user } from 'db/schema';
+import { eq } from 'drizzle-orm';
 import { LoaderFunctionArgs } from '@remix-run/node';
-import { user, list, event, todoListLinkToEvent } from 'db/schema';
 import { authenticator } from '~/services/auth.server';
 import { db } from '~/services/db.server';
-import { eq, arrayOverlaps, or } from 'drizzle-orm';
 import { useLoaderData, useFetcher } from '@remix-run/react';
 import { useRef } from 'react';
+import { getTodoLists } from '~/function/getUserData';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
 	try {
@@ -16,49 +17,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 				.from(user)
 				.where(eq(user.email, userData?.email || ''))
 		)[0];
-		const todoListsData = await db
-			.select()
-			.from(list)
-			.where(
-				or(
-					eq(list.owner_id, userInfoFromDB.id),
-					arrayOverlaps(list.shareWith, [userInfoFromDB.id]),
-				),
-			)
-			.leftJoin(todoListLinkToEvent, eq(list.id, todoListLinkToEvent.list_id))
-			.leftJoin(event, eq(todoListLinkToEvent.event_id, event.id));
-		const todoLists: TodoListWithOwnerInfo[] = todoListsData.reduce(
-			(acc: TodoListWithOwnerInfo[], todoListData: (typeof todoListsData)[0]) => {
-				if (
-					acc.some((accTodoList) => accTodoList.id === todoListData.list.id)
-				) {
-					acc
-						.find((accTodoList) => accTodoList.id === todoListData.list.id)
-						?.Todo.push({
-							id: todoListData.event?.id || 0,
-							title: todoListData.event?.title || '',
-							description: todoListData.event?.description || '',
-							isToday:
-								new Date(todoListData.event?.start_date || 0).toDateString() ===
-								new Date(todoListData.event?.end_date || 0).toDateString(),
-							datetime: (
-								todoListData.event?.start_date || new Date()
-							).toISOString(),
-							finished: false,
-						});
-				} else {
-					acc.push({
-						id: todoListData.list.id,
-						title: todoListData.list.title,
-						Todo: [],
-						isOwner: todoListData.list.owner_id === userInfoFromDB.id,
-						shareStatus: todoListData.list.shareStatus as ShareStatus,
-					});
-				}
-				return acc;
-			},
-			[],
-		);
+		const todoLists = await getTodoLists(userInfoFromDB.id);
 		return {
 			todolists: todoLists,
 		};

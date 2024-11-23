@@ -56,6 +56,7 @@ export const event = pgTable('event', {
 	is_long_time: boolean('is_long_time').default(false),
 	start_date: timestamp('start_date').notNull().defaultNow(),
 	end_date: timestamp('end_date'),
+	creater_id: integer('creater_id')
 });
 
 export const session = pgTable('session', {

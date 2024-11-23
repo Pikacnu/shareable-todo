@@ -28,7 +28,7 @@ export type TodoList = TodoListInfo & {
 
 export type TodoListWithOwnerInfo = TodoList & {
 	isOwner: boolean;
-}
+};
 
 export function DropList({ todoList }: { todoList: TodoListWithOwnerInfo[] }) {
 	//const fetcher = useFetcher();
@@ -118,11 +118,11 @@ export function DropList({ todoList }: { todoList: TodoListWithOwnerInfo[] }) {
 									return (
 										<div
 											key={todo.id}
-											className='flex flex-row justify-between items-center'
+											className='flex flex-row justify-between items-center '
 										>
-											<div className='flex flex-row justify-around *:m-4'>
-												<h1>{todo.title}</h1>
-												<p>{todo.description}</p>
+											<div className='flex flex-row justify-around *:m-2 items-center'>
+												<h1 className='bg-gray-700 p-2'>{todo.title}</h1>
+												<p className='bg-gray-700 p-2'>{todo.description}</p>
 												<p>
 													{todo.isToday
 														? (() => {
@@ -140,7 +140,7 @@ export function DropList({ todoList }: { todoList: TodoListWithOwnerInfo[] }) {
 														: todo.datetime}
 												</p>
 											</div>
-											<div className='flex flex-row m-2'>
+											<div className='flex flex-row m-2 *:ml-4'>
 												<button
 													className={` select-none ${
 														todo.finished ? ' bg-green-500' : 'bg-red-500'
@@ -148,6 +148,19 @@ export function DropList({ todoList }: { todoList: TodoListWithOwnerInfo[] }) {
 													onClick={() => {}}
 												>
 													{todo.finished ? 'Finish' : 'working'}
+												</button>
+												<button
+													className={`select-none ${'bg-red-500'} p-2 rounded-lg`}
+													onClick={() => {
+														const formData = new FormData();
+														formData.append('id', todo.id.toString());
+														Fetcher.submit(formData, {
+															method: 'DELETE',
+															action: '/api/todo',
+														});
+													}}
+												>
+													Delete
 												</button>
 											</div>
 										</div>
