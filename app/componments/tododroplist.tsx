@@ -139,9 +139,9 @@ export function DropList({ todoList }: { todoList: TodoListWithListInfo[] }) {
 									return (
 										<div
 											key={todo.id}
-											className='flex flex-row justify-between items-center '
+											className='flex flex-row justify-between items-center relative'
 										>
-											<div className='flex flex-row justify-around *:m-2 items-center'>
+											<div className='flex flex-row justify-around *:m-2 items-center overflow-hidden *:overflow-clip *:max-w-36'>
 												<h1 className='bg-gray-700 p-2'>{todo.title}</h1>
 												<p className='bg-gray-700 p-2'>{todo.description}</p>
 												<p>

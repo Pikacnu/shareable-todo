@@ -306,19 +306,9 @@ export default function Add() {
 									>
 										<div className=' justify-between flex-grow overflow-hidden *:text-clip *:text-wrap '>
 											<p>Title : {todo.title}</p>
-											<p>Description : {todo.description}</p>
-										</div>
-										<div className='flex flex-row'>
-											<input
-												type='checkbox'
-												id={`todo-${todo.id}-finish`}
-											/>
-											<label
-												htmlFor={`todo-${todo.id}-finish`}
-												className='select-none'
-											>
-												Finished?
-											</label>
+											<p className=' text-clip text-wrap whitespace-break-spaces'>
+												Description : {todo.description}
+											</p>
 										</div>
 									</div>
 								))}

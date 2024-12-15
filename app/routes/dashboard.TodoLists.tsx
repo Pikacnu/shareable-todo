@@ -56,6 +56,7 @@ export default function TodoLists() {
 					className='p-2 w-32 bg-green-600'
 					onClick={() => {
 						const formData = new FormData();
+						if (!title.current?.value) return alert('title is required');
 						formData.append('title', title.current?.value || '');
 						formData.append('description', description.current?.value || '');
 						Fetcher.submit(formData, {

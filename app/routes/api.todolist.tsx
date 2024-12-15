@@ -9,6 +9,7 @@ const POST = async (request: Request) => {
 	const formData = await request.formData();
 	const title = formData.get('title') as string;
 	const desctiprion = formData.get('description') as string;
+	if (!title) return new Response('Title is required', { status: 400 });
 	const userData = await authenticator.isAuthenticated(request);
 	const userInfoFromDB = (
 		await db

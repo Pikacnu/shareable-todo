@@ -1,0 +1,9 @@
+{
+  "HTMLWhitespaceSensitivity": "strict",
+  "JsxSingleQuote": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "singleattribute": true,
+  "useTabs": false,
+  "vueIndentScriptAndStyle": true
+}
