@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
+import { Todo } from './tododroplist';
 
 interface DateInfo {
   day: number;
-  notCurrentMonth: boolean;
+  monthDelta: number;
   today?: boolean;
 }
 
-export default function Calendar() {
+export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
   const [month, setMonth] = useState(new Date().getMonth());
   const data = useMemo(() => {
     const today = new Date();
@@ -15,30 +16,25 @@ export default function Calendar() {
     const daysOfTheMonth = lastDay.getDate();
 
     const firstDayWeek = firstDay.getDay();
-    //const lastDate = lastDay.getDate();
-    const prevLastDate = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      0,
-    ).getDate();
+    const prevLastDate = new Date(today.getFullYear(), month, 0).getDate();
     const prev = Array(firstDayWeek)
       .fill(0)
       .map((_, i) => ({
         day: prevLastDate - firstDayWeek + i + 1,
-        notCurrentMonth: true,
+        monthDelta: -1,
       }));
     const current = Array(daysOfTheMonth)
       .fill(0)
       .map((_, i) => ({
         day: i + 1,
-        notCurrentMonth: false,
+        monthDelta: 0,
         today: today.getDate() === i + 1 && today.getMonth() === month,
       }));
     const next = Array(42 - (prev.length + current.length))
       .fill(0)
       .map((_, i) => ({
         day: i + 1,
-        notCurrentMonth: true,
+        monthDelta: 1,
       }));
     const data: DateInfo[][] = [prev, current, next];
 
@@ -63,27 +59,69 @@ export default function Calendar() {
       <div className=" flex grid-cols-subgrid col-span-5 items-center justify-center text-center">
         {yearDisplay}/{monthDisplay + 1}
       </div>
+
       <button onClick={() => setMonth((prev) => prev + 1)}>next</button>
       {data.map((week) =>
         week.map((dateInfo) => {
+          const currentMonth = (month + dateInfo.monthDelta + 12) % 12;
+          const currentYear =
+            new Date().getFullYear() +
+            Math.floor((month + dateInfo.monthDelta) / 12);
+          const DuringThisDate = todoListData?.filter((todo) => {
+            const startDate = new Date((todo?.startTime || '')?.slice(0, 10));
+            const endDate = new Date((todo?.endTime || '')?.slice(0, 10));
+            const now = new Date(
+              `${currentYear}-${currentMonth + 1}-${dateInfo.day}`,
+            );
+            if (
+              startDate.getTime() <= now.getTime() &&
+              endDate.getTime() >= now.getTime()
+            ) {
+              return true;
+            }
+            return false;
+          });
+          const countsOfEventOnThisDate = DuringThisDate?.length || 0;
           if (dateInfo.today) {
             return (
               <div
-                key={`${dateInfo.day}-${dateInfo.notCurrentMonth}`}
-                className={`text-xl bg-yellow-400	`}
+                key={`${dateInfo.day}-${dateInfo.monthDelta}`}
+                className={` bg-yellow-400`}
               >
-                {dateInfo.day}
+                <p>{dateInfo.day}</p>
+
+                <p
+                  className={`${
+                    countsOfEventOnThisDate > 0
+                      ? 'text-blue-400'
+                      : 'text-gray-600'
+                  }
+                  `}
+                >
+                  {countsOfEventOnThisDate > 0
+                    ? `${countsOfEventOnThisDate} Events`
+                    : 'No Event'}
+                </p>
               </div>
             );
           }
           return (
             <div
-              key={`${dateInfo.day}-${dateInfo.notCurrentMonth}`}
+              key={`${dateInfo.day}-${dateInfo.monthDelta}`}
               className={`${
-                dateInfo.notCurrentMonth ? 'text-blue-400' : ' text-black'
-              } text-xl`}
+                dateInfo.monthDelta === 0 ? 'text-blue-400' : ' text-gray-400'
+              } `}
             >
               {dateInfo.day}
+              <p
+                className={`${
+                  countsOfEventOnThisDate > 0 ? 'text-red-400' : 'text-gray-200'
+                }`}
+              >
+                {countsOfEventOnThisDate > 0
+                  ? `${countsOfEventOnThisDate} Events`
+                  : 'No Event'}
+              </p>
             </div>
           );
         }),

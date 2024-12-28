@@ -6,10 +6,10 @@ Not all things is functional
 
 - [x] Own TodoList
 - [x] Shareable
-- [ ] Personal Finish State
-- [ ] Auto Remove Todo
+- [x] Personal Finish State
+- [x] Auto Remove Todo
 - [ ] Repeat Todo(maybe will added in feature)
-- [ ] Calendar Display
+- [x] Calendar Display
 - [ ] Important Todo Display
 
 ## Install

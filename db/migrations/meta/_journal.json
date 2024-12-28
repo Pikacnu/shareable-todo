@@ -71,6 +71,41 @@
       "when": 1732352621582,
       "tag": "0009_brief_champions",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1735141223610,
+      "tag": "0010_greedy_molecule_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1735142430787,
+      "tag": "0011_nosy_lake",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1735143355721,
+      "tag": "0012_naive_genesis",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1735144113598,
+      "tag": "0013_unknown_wasp",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1735144734546,
+      "tag": "0014_certain_carlie_cooper",
+      "breakpoints": true
     }
   ]
 }
