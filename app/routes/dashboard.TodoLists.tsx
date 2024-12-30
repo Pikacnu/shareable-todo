@@ -8,6 +8,15 @@ import { useLoaderData, useFetcher } from '@remix-run/react';
 import { useRef } from 'react';
 import { getTodoLists } from '~/function/getUserData';
 
+export const meta = () => {
+  return [
+    {
+      title: 'TodoLists',
+      description: 'TodoLists',
+    },
+  ];
+};
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   try {
     const userData = await authenticator.isAuthenticated(request);

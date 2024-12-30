@@ -11,6 +11,7 @@ Not all things is functional
 - [ ] Repeat Todo(maybe will added in feature)
 - [x] Calendar Display
 - [ ] Important Todo Display
+- [x] RWD
 
 ## Install
 

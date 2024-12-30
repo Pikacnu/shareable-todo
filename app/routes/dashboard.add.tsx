@@ -10,7 +10,7 @@ import { getTodoLists } from '~/function/getUserData';
 export const meta = () => {
   return [
     {
-      title: 'Dashboard - Add Todo',
+      title: 'Add Todo',
     },
   ];
 };

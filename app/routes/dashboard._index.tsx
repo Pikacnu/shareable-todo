@@ -46,9 +46,56 @@ export default function Dashboard() {
             <Calendar todoListData={todoListData} />
           </div>
         </div>
-        <div className="flex flex-col flex-shrink">
-          <h1>{"Today's Todo"}</h1>
-          <div className="w-full h-full bg-white flex flex-col text-black"></div>
+        <div className="flex flex-col lg:max-h-[20vh] flex-shrink-0">
+          <h1>{"Near End Todo"}</h1>
+          <div className="w-full h-full bg-white flex flex-col text-black overflow-y-auto">
+            {todoListData.map((todo) => {
+              if (todo.finished) return null;
+              if (
+                new Date(todo.endTime || '').getTime() -
+                  2 * 24 * 60 * 60 * 1000 >
+                new Date().getTime()
+              )
+                return null;
+              return (
+                <div
+                  key={todo.id}
+                  className="flex flex-row bg-gray-200 *:p-2 items-center relative"
+                >
+                  <div className=" flex-shrink flex-grow">
+                    <div className="flex flex-col">
+                      <p>Title : </p>
+                      <p className=" ml-2 text-ellipsis w-full overflow-hidden whitespace-nowrap max-w-[30vw]">
+                        {todo.title}
+                      </p>
+                    </div>
+                    <div className="flex flex-col">
+                      <p>Description : </p>
+                      <p className="ml-2 max-w-[30vw] text-ellipsis w-full overflow-hidden whitespace-nowrap">
+                        {todo.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-row flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      id={`todo-${todo.id}-finish`}
+                      checked={todo.finished}
+                      onChange={() =>
+                        handleFinishChange(todo.id, !todo.finished)
+                      }
+                    />
+                    <label
+                      htmlFor={`todo-${todo.id}-finish`}
+                      className="select-none"
+                    >
+                      Finished?
+                    </label>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
       <div className=" m-4 h-full w-[80vw] lg:w-[40vw] text-black flex flex-col">
