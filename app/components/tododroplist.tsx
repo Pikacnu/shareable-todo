@@ -86,7 +86,7 @@ export function DropList({ todoList }: { todoList: TodoListWithListInfo[] }) {
                       }
                       if (navigator) {
                         navigator.clipboard.writeText(
-                          `http://localhost:5173/share/${todoList.shareId}`,
+                          `${process.env.URL}/share/${todoList.shareId}`,
                         );
                         alert('copy to your clipboard');
                       }
