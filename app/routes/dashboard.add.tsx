@@ -83,6 +83,9 @@ export default function Add() {
     clear?: boolean,
   ) => {
     if (title === '') return alert('Title can not be blank');
+    if (description === '') return alert('Description can not be blank');
+    if (title.trim().length === 0 || description.trim().length === 0)
+      return alert('Title and description can not be blank');
     if (selectedTodoLists.length === 0)
       return alert('Please select a todo list');
     const formData = new FormData();

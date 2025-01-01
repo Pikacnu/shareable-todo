@@ -33,7 +33,13 @@ export type TodoListWithListInfo = TodoList & {
   shareId: string;
 };
 
-export function DropList({ todoList }: { todoList: TodoListWithListInfo[] }) {
+export function DropList({
+  todoList,
+  url,
+}: {
+  todoList: TodoListWithListInfo[];
+  url: string;
+}) {
   //const fetcher = useFetcher();
   const [todoOpenState, setTodoOpenState] = useState<
     {
@@ -86,7 +92,7 @@ export function DropList({ todoList }: { todoList: TodoListWithListInfo[] }) {
                       }
                       if (navigator) {
                         navigator.clipboard.writeText(
-                          `${process.env.URL}/share/${todoList.shareId}`,
+                          `${url}/share/${todoList.shareId}`,
                         );
                         alert('copy to your clipboard');
                       }

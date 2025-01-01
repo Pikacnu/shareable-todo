@@ -27,7 +27,8 @@ const POST = async (request: Request) => {
     .returning({
       id: list.id,
       shareStatus: list.shareStatus,
-    });
+    })
+    .onConflictDoNothing();
   if (insertedData.length > 0) {
     console.log(insertedData);
     return new Response('Success', { status: 200 });

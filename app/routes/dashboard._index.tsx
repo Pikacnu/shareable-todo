@@ -42,7 +42,7 @@ export default function Dashboard() {
       <div className="lg:m-4 flex-grow flex flex-col lg:h-full *:min-h-[30vh] relative [&>div>h1]:bg-gray-500 max-lg:w-[80vw] lg:[&>div>h1]:w-1/4 [&>div>h1]:m-2 [&>div>h1]:text-black [&>div>h1]:text-center [&>div>h1]:p-2 ">
         <div className="flex flex-col w-full">
           <h1>calendar</h1>
-          <div className="w-full h-full dark:bg-gray-600 bg-stone-400 relative lg:text-xl text-sm">
+          <div className="w-full h-full dark:bg-gray-600 bg-stone-400 relative lg:text-xl text-xs">
             <Calendar todoListData={todoListData} />
           </div>
         </div>

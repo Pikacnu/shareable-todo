@@ -30,23 +30,25 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const todoLists = await getTodoLists(userInfoFromDB.id);
     return {
       todolists: todoLists,
+      url: process.env.URL,
     };
   } catch (e) {
     console.log(e);
     return {
       todolists: [],
+      url: process.env.URL,
     };
   }
 };
 
 export default function TodoLists() {
-  const { todolists } = useLoaderData<typeof loader>();
+  const { todolists, url } = useLoaderData<typeof loader>();
   const Fetcher = useFetcher();
   const title = useRef<HTMLInputElement>(null);
   const description = useRef<HTMLInputElement>(null);
   return (
     <div className="w-full h-full  ">
-      <DropList todoList={todolists} />
+      <DropList todoList={todolists} url={url!} />
       <div className="flex m-4 max-lg:max-w-[90vw]">
         <div className="flex bg-slate-700 *:p-2 *:max-w-[20vw] flex-grow text-sm lg:text-xl">
           <input type="text" placeholder="title" ref={title} />
@@ -56,7 +58,12 @@ export default function TodoLists() {
           className="p-2 w-32 bg-green-600"
           onClick={() => {
             const formData = new FormData();
-            if (!title.current?.value) return alert('title is required');
+            if (
+              title.current?.value.trim().length === 0 ||
+              description.current?.value.trim().length === 0
+            ) {
+              return alert('title and description is required');
+            }
             formData.append('title', title.current?.value || '');
             formData.append('description', description.current?.value || '');
             Fetcher.submit(formData, {
