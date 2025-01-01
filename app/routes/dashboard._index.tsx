@@ -1,8 +1,8 @@
 import { getTodoLists, getUserDataByRequest } from '~/function/getUserData';
 import { LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useFetcher } from '@remix-run/react';
-import Calendar from '~/componments/calendar';
-import { Todo } from '~/componments/tododroplist';
+import Calendar from '~/components/calendar';
+import { Todo } from '~/components/tododroplist';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userData = await getUserDataByRequest(request);
@@ -38,17 +38,17 @@ export default function Dashboard() {
   }, [] as Todo[]);
 
   return (
-    <div className="flex flex-col lg:flex-row justify-between max-w-screen w-full h-[80vh] items-center relative overflow-y-auto lg:overflow-hidden">
-      <div className=" lg:m-4 flex-grow flex flex-col h-full *:min-h-[30vh] lg:*:m-4 relative [&>div>h1]:bg-gray-500 max-lg:w-[80vw] lg:[&>div>h1]:w-1/4 [&>div>h1]:m-2 [&>div>h1]:text-black [&>div>h1]:text-center [&>div>h1]:p-2 ">
-        <div className="flex flex-col">
+    <div className="flex flex-col lg:flex-row justify-between max-w-screen w-full h-screen lg:h-[80vh] items-center relative overflow-y-auto lg:overflow-hidden">
+      <div className="lg:m-4 flex-grow flex flex-col lg:h-full *:min-h-[30vh] relative [&>div>h1]:bg-gray-500 max-lg:w-[80vw] lg:[&>div>h1]:w-1/4 [&>div>h1]:m-2 [&>div>h1]:text-black [&>div>h1]:text-center [&>div>h1]:p-2 ">
+        <div className="flex flex-col w-full">
           <h1>calendar</h1>
-          <div className="w-full h-full bg-white relative lg:text-xl text-sm">
+          <div className="w-full h-full dark:bg-gray-600 bg-stone-400 relative lg:text-xl text-sm">
             <Calendar todoListData={todoListData} />
           </div>
         </div>
-        <div className="flex flex-col lg:max-h-[20vh] flex-shrink-0">
-          <h1>{"Near End Todo"}</h1>
-          <div className="w-full h-full bg-white flex flex-col text-black overflow-y-auto">
+        <div className="flex flex-col lg:max-h-[30vh] h-full">
+          <h1>{'Near End Todo'}</h1>
+          <div className="w-full h-full dark:bg-gray-600 bg-stone-400 flex flex-col text-black overflow-y-auto *:m-4">
             {todoListData.map((todo) => {
               if (todo.finished) return null;
               if (
@@ -60,7 +60,7 @@ export default function Dashboard() {
               return (
                 <div
                   key={todo.id}
-                  className="flex flex-row bg-gray-200 *:p-2 items-center relative"
+                  className="flex flex-row bg-gray-400 *:p-2 items-center relative"
                 >
                   <div className=" flex-shrink flex-grow">
                     <div className="flex flex-col">
@@ -100,7 +100,7 @@ export default function Dashboard() {
       </div>
       <div className=" m-4 h-full w-[80vw] lg:w-[40vw] text-black flex flex-col">
         <h1 className="bg-slate-500 m-2 p-2 w-1/4 text-center">Todos</h1>
-        <div className="bg-white flex-grow overflow-y-auto">
+        <div className="dark:bg-gray-600 bg-stone-400 flex-grow overflow-y-auto">
           {todolists.map((todoList) => {
             if (todoList.Todo.length === 0) return null;
             return (
@@ -110,7 +110,7 @@ export default function Dashboard() {
                   {todoList.Todo.map((todo) => (
                     <div
                       key={`todo-${todo.id}`}
-                      className="flex flex-row bg-gray-200 *:p-2 items-center relative"
+                      className="flex flex-row bg-gray-400 *:p-2 items-center relative"
                     >
                       <div className=" flex-shrink flex-grow">
                         <div className="flex flex-col">
@@ -149,6 +149,9 @@ export default function Dashboard() {
             );
           })}
         </div>
+      </div>
+      <div className="bg-black opacity-0 w-full hidden max-lg:block">
+        <p className="max-lg:h-16"></p>
       </div>
     </div>
   );

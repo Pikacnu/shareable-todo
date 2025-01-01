@@ -43,7 +43,7 @@ export function DropList({ todoList }: { todoList: TodoListWithListInfo[] }) {
   >(todoList.map((todoList) => ({ todoListID: todoList.id, isOpen: false })));
   const Fetcher = useFetcher();
   return (
-    <div className="flex flex-col h-full justify-start lg:w-full text-sm lg:text-2xl">
+    <div className="flex flex-col h-full justify-start lg:w-full text-sm lg:text-xl">
       {todoList.map((todoList) => {
         const isOpen = todoOpenState.find(
           (todoOpenState) => todoOpenState.todoListID === todoList.id,
@@ -135,7 +135,7 @@ export function DropList({ todoList }: { todoList: TodoListWithListInfo[] }) {
               hidden={!isOpen}
             >
               {todoList.Todo.length === 0 ? (
-                <div className="text-2xl text-center">Nothing Here</div>
+                <div className="text-xl text-center">Nothing Here</div>
               ) : (
                 todoList.Todo.map((todo) => {
                   return (
@@ -143,7 +143,7 @@ export function DropList({ todoList }: { todoList: TodoListWithListInfo[] }) {
                       key={todo.id}
                       className="flex flex-row justify-between items-center relative"
                     >
-                      <div className="flex flex-row justify-around *:m-2 items-center overflow-hidden *:overflow-clip *:max-w-36">
+                      <div className="flex flex-row justify-around *:m-2 items-center overflow-hidden *:overflow-clip max-lg:*:max-w-36">
                         <h1 className="bg-gray-700 p-2">{todo.title}</h1>
                         <p className="bg-gray-700 p-2">{todo.description}</p>
                         <p>
@@ -160,7 +160,7 @@ export function DropList({ todoList }: { todoList: TodoListWithListInfo[] }) {
                                 return `${-dDate} days after`;
                                 // eslint-disable-next-line no-mixed-spaces-and-tabs
                               })()
-                            : todo.datetime}
+                            : todo.datetime.slice(0, 10)}
                         </p>
                       </div>
                       <div className="flex flex-row m-2 *:ml-4">

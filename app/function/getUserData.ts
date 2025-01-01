@@ -1,4 +1,4 @@
-import { ShareStatus, TodoListWithListInfo } from '~/componments/tododroplist';
+import { ShareStatus, TodoListWithListInfo } from '~/components/tododroplist';
 import {
   user,
   list,

@@ -1,4 +1,4 @@
-import { DropList } from '~/componments/tododroplist';
+import { DropList } from '~/components/tododroplist';
 import { user } from 'db/schema';
 import { eq } from 'drizzle-orm';
 import { LoaderFunctionArgs, redirect } from '@remix-run/node';

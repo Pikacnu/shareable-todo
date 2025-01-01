@@ -8,7 +8,7 @@ import { and, eq } from 'drizzle-orm';
 import { getUserDataByRequest } from '~/function/getUserData';
 import { db } from '~/services/db.server';
 import { useFetcher, useLoaderData } from '@remix-run/react';
-import { ShareStatus } from '~/componments/tododroplist';
+import { ShareStatus } from '~/components/tododroplist';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const id = params.id;
