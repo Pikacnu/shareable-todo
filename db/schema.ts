@@ -13,12 +13,20 @@ import {
 export const shareStatus = pgEnum('shareStatus', ['private', 'public']);
 export const userRole = pgEnum('userRole', ['admin', 'user']);
 
-export const user = pgTable('userdata', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull(),
-  role: userRole('role').default('user'),
-});
+export const user = pgTable(
+  'userdata',
+  {
+    id: serial('id').primaryKey(),
+    name: text('name').notNull(),
+    email: text('email').notNull(),
+    role: userRole('role').default('user'),
+  },
+  (t) => {
+    return {
+      user_unique: unique('user_unq').on(t.email, t.id),
+    };
+  },
+);
 
 export const list = pgTable(
   'list',

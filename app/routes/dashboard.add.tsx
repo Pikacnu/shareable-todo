@@ -267,11 +267,11 @@ export default function Add() {
           </button>
         </div>
       </div>
-      <div className="flex-col lg:w-full overflow-visible lg:overflow-hidden relative hidden lg:flex">
+      <div className="flex-col lg:w-full overflow-visible lg:overflow-hidden relative lg:flex">
         <h1 className="bg-gray-500 w-auto p-2">Preview - Lists</h1>
         <div className="h-full text-black bg-gray-500 m-4 lg:m-0">
           {todolistdata.map((todoList) => {
-            let Todo = todoList.Todo;
+            let Todo = todoList.Todo ;
             if (selectedTodoLists.some((data) => data.id === todoList.id))
               Todo = [
                 ...todoList.Todo,
@@ -284,6 +284,7 @@ export default function Add() {
                     new Date(startDatetime).getDate() ===
                     new Date(endDatetime).getDate(),
                   finished: false,
+                  preview: true,
                 },
               ];
             if (Todo.length === 0) return null;
@@ -293,7 +294,7 @@ export default function Add() {
                 {Todo.map((todo) => (
                   <div
                     key={`todo-${todo.id}`}
-                    className="flex flex-row bg-gray-200 *:p-2 items-center overflow-hidden relative outline outline-2"
+                    className={`flex flex-row ${todo?.preview?'bg-yellow-200':'bg-gray-200'} *:p-2 items-center overflow-hidden relative outline outline-2`}
                   >
                     <div className=" justify-between flex-grow overflow-hidden *:text-clip *:text-wrap ">
                       <p>Title : {todo.title}</p>

@@ -21,6 +21,7 @@ export type Todo = {
   finished: boolean;
   startTime?: string;
   endTime?: string;
+  preview?: boolean;
 };
 
 export type TodoList = TodoListInfo & {
@@ -49,7 +50,7 @@ export function DropList({
   >(todoList.map((todoList) => ({ todoListID: todoList.id, isOpen: false })));
   const Fetcher = useFetcher();
   return (
-    <div className="flex flex-col h-full justify-start lg:w-full text-sm lg:text-xl">
+    <div className="flex flex-col h-full justify-start lg:w-full text-xs lg:text-xl">
       {todoList.map((todoList) => {
         const isOpen = todoOpenState.find(
           (todoOpenState) => todoOpenState.todoListID === todoList.id,
