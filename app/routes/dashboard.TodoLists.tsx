@@ -12,7 +12,7 @@ export const meta = () => {
   return [
     {
       title: 'TodoLists',
-      description: 'TodoLists',
+      description: 'show all todoLists you have',
     },
   ];
 };
@@ -59,8 +59,7 @@ export default function TodoLists() {
           onClick={() => {
             const formData = new FormData();
             if (
-              title.current?.value.trim().length === 0 ||
-              description.current?.value.trim().length === 0
+              title.current?.value.trim().length === 0
             ) {
               return alert('title and description is required');
             }

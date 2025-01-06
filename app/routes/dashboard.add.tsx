@@ -11,6 +11,7 @@ export const meta = () => {
   return [
     {
       title: 'Add Todo',
+      description: 'add todo to your list',
     },
   ];
 };
@@ -60,18 +61,20 @@ export default function Add() {
   );
   const now = new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000;
   const defaultDateString = new Date(now).toISOString().slice(0, 16);
-  const [selectIndex, setSelectIndex] = useState(0);
   const [startDatetime, setStartDatetime] = useState(defaultDateString);
   const [endDatetime, setEndDatetime] = useState(defaultDateString);
+  const [loop, setLoop] = useState(false);
+  const [loopDuration, setLoopDuration] = useState('daily');
   const addTodo = useFetcher();
   const clearTempData = () => {
     setTitle('');
     setDescription('');
     setIsToday(false);
     setselectedTodoLists([]);
-    setSelectIndex(0);
     setStartDatetime(defaultDateString);
     setEndDatetime(defaultDateString);
+    setLoop(false);
+    setLoopDuration('daily');
   };
   const submit = (
     title: string,
@@ -80,11 +83,12 @@ export default function Add() {
     startDatetime: string,
     endDatetime: string,
     selectedTodoLists: TodoListInfo[],
-    clear?: boolean,
+    loop: boolean,
+    loopDuration: string,
+    clear = false,
   ) => {
     if (title === '') return alert('Title can not be blank');
-    if (description === '') return alert('Description can not be blank');
-    if (title.trim().length === 0 || description.trim().length === 0)
+    if (title.trim().length === 0)
       return alert('Title and description can not be blank');
     if (selectedTodoLists.length === 0)
       return alert('Please select a todo list');
@@ -95,6 +99,8 @@ export default function Add() {
       isToday,
       startDatetime,
       endDatetime,
+      loop,
+      loopDuration,
     }).forEach(([key, value]) => {
       formData.append(key, value.toString());
     });
@@ -167,13 +173,47 @@ export default function Add() {
               </div>
             </div>
           </div>
+          <div className="flex flex-row justify-around">
+            <div>
+              <input
+                type="checkbox"
+                name="loop"
+                id="loop"
+                checked={loop}
+                onChange={() => setLoop((prev) => !prev)}
+              />
+              <label htmlFor="loop">Repeat (Still in testing)</label>
+            </div>
+            <select
+              name="loopDuration"
+              id="loopDuration"
+              disabled={!loop}
+              value={loopDuration}
+              onChange={(e) => setLoopDuration(e.target.value)}
+            >
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
           <div className="flex flex-col">
             <label htmlFor="select-affectlist">Affect Lists</label>
             <select
               id="select-affectlist"
-              value={selectIndex}
               onChange={(e) => {
-                setSelectIndex(Number(e.target.value));
+                e.preventDefault();
+                const selectIndex = Number(e.target.value);
+                const selectedList = todolists.find(
+                  (item) => item.id === selectIndex,
+                );
+                if (
+                  selectedTodoLists.some((item) => item.id === selectedList?.id)
+                )
+                  return;
+                if (selectedList) {
+                  setselectedTodoLists([...selectedTodoLists, selectedList]);
+                }
               }}
             >
               <option value="none" id="option">
@@ -190,24 +230,6 @@ export default function Add() {
                   </option>
                 ))}
             </select>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                const selectedList = todolists.find(
-                  (item) => item.id === selectIndex,
-                );
-                setSelectIndex(0);
-                if (
-                  selectedTodoLists.some((item) => item.id === selectedList?.id)
-                )
-                  return;
-                if (selectedList) {
-                  setselectedTodoLists([...selectedTodoLists, selectedList]);
-                }
-              }}
-            >
-              Add!
-            </button>
             <p className="m-2">
               Lists are the collections of events. You can add events to lists
               to
@@ -243,6 +265,8 @@ export default function Add() {
                 startDatetime,
                 endDatetime,
                 selectedTodoLists,
+                loop,
+                loopDuration,
                 true,
               );
             }}
@@ -259,6 +283,8 @@ export default function Add() {
                 startDatetime,
                 endDatetime,
                 selectedTodoLists,
+                loop,
+                loopDuration,
                 false,
               )
             }
@@ -271,7 +297,7 @@ export default function Add() {
         <h1 className="bg-gray-500 w-auto p-2">Preview - Lists</h1>
         <div className="h-full text-black bg-gray-500 m-4 lg:m-0">
           {todolistdata.map((todoList) => {
-            let Todo = todoList.Todo ;
+            let Todo = todoList.Todo;
             if (selectedTodoLists.some((data) => data.id === todoList.id))
               Todo = [
                 ...todoList.Todo,
@@ -294,13 +320,17 @@ export default function Add() {
                 {Todo.map((todo) => (
                   <div
                     key={`todo-${todo.id}`}
-                    className={`flex flex-row ${todo?.preview?'bg-yellow-200':'bg-gray-200'} *:p-2 items-center overflow-hidden relative outline outline-2`}
+                    className={`flex flex-row ${
+                      todo?.preview ? 'bg-yellow-200' : 'bg-gray-200'
+                    } *:p-2 items-center overflow-hidden relative outline outline-2`}
                   >
                     <div className=" justify-between flex-grow overflow-hidden *:text-clip *:text-wrap ">
                       <p>Title : {todo.title}</p>
-                      <p className=" text-clip text-wrap whitespace-break-spaces">
-                        Description : {todo.description}
-                      </p>
+                      {todo.description && (
+                        <p className=" text-clip text-wrap whitespace-break-spaces">
+                          Description : {todo.description}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}

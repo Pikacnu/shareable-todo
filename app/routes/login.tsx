@@ -30,8 +30,8 @@ export function loader({ request }: LoaderFunctionArgs) {
 
 export default function Login() {
   return (
-    <div className="flex flex-row w-full h-full">
-      <div className="flex flex-col lg:w-1/3 bg-gray-500 bg-opacity-40 *:w-full">
+    <div className="flex flex-row w-full h-full overflow-hidden">
+      <div className="flex flex-col w-full md:w-1/3 bg-gray-500 bg-opacity-40 *:w-full">
         <div className="h-1/4 flex items-end justify-center">
           <h1 className="text-2xl text-center">Login</h1>
         </div>
@@ -39,7 +39,7 @@ export default function Login() {
           <div>{LoginWith({ providor: AuthType.Discord })}</div>
         </div>
       </div>
-      <div className="flex-grow max-lg:hidden"></div>
+      <div className="flex-grow max-md:hidden"></div>
     </div>
   );
 }

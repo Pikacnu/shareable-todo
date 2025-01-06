@@ -3,6 +3,13 @@ import { eq } from 'drizzle-orm';
 import { authenticator } from '~/services/auth.server';
 import { db } from '~/services/db.server';
 
+enum LoopDuration {
+  daily = 'daily',
+  weekly = 'weekly',
+  monthly = 'monthly',
+  yearly = 'yearly',
+}
+
 export const POST = async (request: Request) => {
   try {
     const formData = await request.formData();
@@ -14,8 +21,65 @@ export const POST = async (request: Request) => {
     const selectedTodoListsIDs = (formData.get('selectedTodoLists') as string)
       .split(',')
       .map((id) => parseInt(id));
+    const loop = (formData.get('loop') as string) === 'true' ? true : false;
+    const loopDurationKey = (formData.get('loopDuration') as string) || 'daily';
+    const loopDuration =
+      LoopDuration[loopDurationKey as keyof typeof LoopDuration];
+
     if (title === '')
       return new Response("Title can't be blank", { status: 400 });
+
+    if (!isToday && loop) {
+      if (!loopDuration) {
+        return new Response('Loop duration is not valid', { status: 400 });
+      }
+      const startTime = new Date(startDatetime.toISOString().slice(0, 10));
+      const endTime = new Date(endDatetime.toISOString().slice(0, 10));
+      switch (loopDuration) {
+        case 'daily': {
+          if (endTime.getTime() - startTime.getTime() < 24 * 60 * 60 * 1000) {
+            return new Response('End time should be less than 24 hours', {
+              status: 400,
+            });
+          }
+          break;
+        }
+        case 'weekly': {
+          if (
+            endTime.getTime() - startTime.getTime() >
+            7 * 24 * 60 * 60 * 1000
+          ) {
+            return new Response('End time should be less than 7 days', {
+              status: 400,
+            });
+          }
+          break;
+        }
+        case 'monthly': {
+          if (
+            endTime.getTime() - startTime.getTime() >
+            30 * 24 * 60 * 60 * 1000
+          ) {
+            return new Response('End time should be less than 30 days', {
+              status: 400,
+            });
+          }
+          break;
+        }
+        case 'yearly': {
+          if (
+            endTime.getTime() - startTime.getTime() >
+            365 * 24 * 60 * 60 * 1000
+          ) {
+            return new Response('End time should be less than 365 days', {
+              status: 400,
+            });
+          }
+          break;
+        }
+      }
+    }
+
     const userData = await authenticator.isAuthenticated(request);
     const userInfoFromDB = await db
       .select()

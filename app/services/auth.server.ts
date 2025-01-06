@@ -4,6 +4,7 @@ import { DiscordStrategy } from 'remix-auth-discord';
 import { AuthType, UserData } from './auth.type';
 import { db } from './db.server';
 import { user } from 'db/schema';
+import { eq } from 'drizzle-orm';
 
 export const authenticator = new Authenticator<UserData>(sessionStorage);
 
@@ -23,6 +24,11 @@ authenticator.use(
         name: profile.profile.displayName,
         email: profile.profile.emails![0].value,
       };
+      if (
+        (await db.select().from(user).where(eq(user.email, userData.email)))
+          .length > 0
+      )
+        return userData;
       await db
         .insert(user)
         .values({

@@ -50,7 +50,7 @@ export function DropList({
   >(todoList.map((todoList) => ({ todoListID: todoList.id, isOpen: false })));
   const Fetcher = useFetcher();
   return (
-    <div className="flex flex-col h-full justify-start lg:w-full text-xs lg:text-xl">
+    <div className="flex flex-col h-full justify-start lg:w-full text-xs md:text-lg lg:text-xl">
       {todoList.map((todoList) => {
         const isOpen = todoOpenState.find(
           (todoOpenState) => todoOpenState.todoListID === todoList.id,
@@ -104,22 +104,25 @@ export function DropList({
                 ) : (
                   ''
                 )}
-                <button
-                  onClick={() => {
-                    const formData = new FormData();
-                    formData.append('id', todoList.id.toString());
-                    formData.append('type', 'shareStatus');
-                    formData.append('shareStatus', todoList.shareStatus);
-                    Fetcher.submit(formData, {
-                      method: 'PUT',
-                      action: '/api/todoList',
-                    });
-                  }}
-                >
-                  {todoList.shareStatus === ShareStatus.Public
-                    ? 'Public'
-                    : 'Private'}
-                </button>
+                {todoList.isOwner ? (
+                  <button
+                    onClick={() => {
+                      const formData = new FormData();
+                      formData.append('id', todoList.id.toString());
+                      formData.append('type', 'shareStatus');
+                      formData.append('shareStatus', todoList.shareStatus);
+                      Fetcher.submit(formData, {
+                        method: 'PUT',
+                        action: '/api/todoList',
+                      });
+                    }}
+                  >
+                    {todoList.shareStatus === ShareStatus.Public
+                      ? 'Public'
+                      : 'Private'}
+                  </button>
+                ) : null}
+
                 <button
                   className="bg-red-600"
                   onClick={() => {
@@ -131,7 +134,7 @@ export function DropList({
                     });
                   }}
                 >
-                  Delete
+                  {todoList.isOwner ? 'Delete' : 'Leave'}
                 </button>
               </div>
             </div>
@@ -190,19 +193,21 @@ export function DropList({
                         >
                           {todo.finished ? 'Finish' : 'working'}
                         </button>
-                        <button
-                          className={`select-none ${'bg-red-500'} p-2 rounded-lg`}
-                          onClick={() => {
-                            const formData = new FormData();
-                            formData.append('id', todo.id.toString());
-                            Fetcher.submit(formData, {
-                              method: 'DELETE',
-                              action: '/api/todo',
-                            });
-                          }}
-                        >
-                          Delete
-                        </button>
+                        {todoList.isOwner ? (
+                          <button
+                            className={`select-none ${'bg-red-500'} p-2 rounded-lg`}
+                            onClick={() => {
+                              const formData = new FormData();
+                              formData.append('id', todo.id.toString());
+                              Fetcher.submit(formData, {
+                                method: 'DELETE',
+                                action: '/api/todo',
+                              });
+                            }}
+                          >
+                            Delete
+                          </button>
+                        ) : null}
                       </div>
                     </div>
                   );

@@ -55,12 +55,21 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
         <div className="flex flex-col-reverse grid-cols-subgrid col-span-7 relative h-full *:outline-slate-50 *:border *:rounded-lg"></div>
         <div className="flex flex-col-reverse grid-cols-subgrid col-span-7 relative h-full *:outline-slate-50 *:border *:rounded-lg"></div>
       </div>
-      <button onClick={() => setMonth((prev) => prev - 1)}>prev</button>
+      <button
+        onClick={() => setMonth((prev) => prev - 1)}
+        className="bg-gray-700 hover:bg-gray-400 text-white font-bold"
+      >
+        prev
+      </button>
       <div className=" flex grid-cols-subgrid col-span-5 items-center justify-center text-center">
         {yearDisplay}/{monthDisplay + 1}
       </div>
-
-      <button onClick={() => setMonth((prev) => prev + 1)}>next</button>
+      <button
+        onClick={() => setMonth((prev) => prev + 1)}
+        className="bg-gray-700 hover:bg-gray-400 text-white font-bold"
+      >
+        next
+      </button>
       {data.map((week) =>
         week.map((dateInfo) => {
           const currentMonth = (month + dateInfo.monthDelta + 12) % 12;
@@ -71,8 +80,13 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
             const startDate = new Date((todo?.startTime || '')?.slice(0, 10));
             const endDate = new Date((todo?.endTime || '')?.slice(0, 10));
             const now = new Date(
-              `${currentYear}-${currentMonth + 1}-${dateInfo.day}`,
+              `${currentYear}-${(currentMonth + 1)
+                .toString()
+                .padStart(2, '0')}-${dateInfo.day.toString().padStart(2, '0')}`,
             );
+            if (todo.isToday && startDate.getTime() == now.getTime()) {
+              return true;
+            }
             if (
               startDate.getTime() <= now.getTime() &&
               endDate.getTime() >= now.getTime()
@@ -93,7 +107,7 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
                 <p
                   className={`${
                     countsOfEventOnThisDate > 0
-                      ? 'text-blue-400'
+                      ? 'text-gray-400'
                       : 'text-gray-600'
                   }
                   `}
@@ -109,7 +123,7 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
             <div
               key={`${dateInfo.day}-${dateInfo.monthDelta}`}
               className={`${
-                dateInfo.monthDelta === 0 ? 'text-blue-400' : ' text-gray-400'
+                dateInfo.monthDelta === 0 ? 'text-gray-400' : ' text-gray-400'
               } `}
             >
               {dateInfo.day}

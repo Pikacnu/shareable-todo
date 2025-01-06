@@ -12,6 +12,12 @@ import {
 
 export const shareStatus = pgEnum('shareStatus', ['private', 'public']);
 export const userRole = pgEnum('userRole', ['admin', 'user']);
+export const loopDuration = pgEnum('loopDuration', [
+  'daily',
+  'weekly',
+  'monthly',
+  'yearly',
+]);
 
 export const user = pgTable(
   'userdata',
@@ -63,12 +69,14 @@ export const event = pgTable('event', {
   description: text('description').notNull(),
   is_long_time: boolean('is_long_time').default(false),
   start_date: timestamp('start_date').notNull().defaultNow(),
+  loop: boolean('loop').default(false),
+  loop_duration: loopDuration('loop_duration').default('daily'),
   end_date: timestamp('end_date'),
   creater_id: integer('creater_id'),
 });
 
 export const session = pgTable('session', {
-  id: serial('id').primaryKey(),
+  id: text('id').primaryKey(),
   user_id: serial('user_id')
     .notNull()
     .references(() => user.id),
@@ -107,26 +115,13 @@ export const finishState = pgTable(
   }),
 );
 
-export const longTimeEvent = pgTable('longTimeEvent', {
+export const chatSession = pgTable('chatSession', {
   id: serial('id').primaryKey(),
   user_id: integer('user_id')
     .notNull()
-    .references(() => user.id),
-  creater_id: integer('creater_id')
-    .notNull()
-    .references(() => user.id),
-  title: text('title').notNull(),
-  description: text('description').notNull(),
-  start_date: timestamp('start_date').notNull(),
-  end_date: timestamp('end_date').notNull(),
-});
-
-export const longTimeEventLinkToList = pgTable('longTimeEventLinkToList', {
-  id: serial('id').primaryKey(),
-  long_time_event_id: integer('long_time_event_id')
-    .notNull()
-    .references(() => longTimeEvent.id, { onDelete: 'cascade' }),
-  list_id: integer('list_id')
-    .notNull()
-    .references(() => list.id, { onDelete: 'cascade' }),
+    .references(() => user.id, { onDelete: 'cascade' }),
+  history: text('history')
+    .array()
+    .default(sql`'{}'::text[]`),
+  count: integer('count').default(10),
 });

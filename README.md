@@ -8,10 +8,11 @@ Not all things is functional
 - [x] Shareable
 - [x] Personal Finish State
 - [x] Auto Remove Todo
-- [ ] Repeat Todo(maybe will added in feature)
+- [x] Repeat Todo
 - [x] Calendar Display
-- [ ] Important Todo Display
+- [x] Important Todo Display
 - [x] RWD
+- [ ] Work With AI
 
 ## Install
 
@@ -51,7 +52,8 @@ This template comes with [Tailwind CSS](https://tailwindcss.com/) already config
 
 ```env
 URL="this.website.url.com"
-DISCORD_CLIENT_ID=""
-DISCORD_CLIENT_SECRET=""
+DISCORD_CLIENT_ID="..."
+DISCORD_CLIENT_SECRET="..."
 DATABASE_URL="postgresql://..."
+GEMINI_API_KEY="..."
 ```

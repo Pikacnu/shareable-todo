@@ -1,7 +1,7 @@
 import { ActionFunctionArgs } from '@remix-run/node';
 import { user, list } from 'db/schema';
 import { authenticator } from '~/services/auth.server';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, arrayOverlaps } from 'drizzle-orm';
 import { db } from '~/services/db.server';
 import { ShareStatus } from '~/components/tododroplist';
 
@@ -55,6 +55,27 @@ const DELETE = async (request: Request) => {
 
   if (deletedData.length > 0) {
     return new Response('Success', { status: 200 });
+  }
+  if (deletedData.length === 0) {
+    const shareIDs = (
+      await db
+        .select()
+        .from(list)
+        .where(arrayOverlaps(list.shareWith, [userInfoFromDB.id]))
+    )[0].shareWith;
+    if (!shareIDs) return new Response('Failed', { status: 400 });
+    const result = await db
+      .update(list)
+      .set({
+        shareWith: shareIDs.filter((i) => i !== userInfoFromDB.id),
+      })
+      .returning({
+        id: list.id,
+      });
+    if (result.length > 0) {
+      return new Response('Success', { status: 200 });
+    }
+    return new Response('Failed', { status: 400 });
   }
   return new Response('Failed', { status: 400 });
 };

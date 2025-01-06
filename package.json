@@ -24,6 +24,7 @@
     "react-dom": "^18.2.0",
     "remix-auth": "^3.7.0",
     "remix-auth-discord": "^1.4.1",
+    "tailwindcss-animation-delay": "^2.0.1",
     "uuid": "^11.0.3"
   },
   "devDependencies": {

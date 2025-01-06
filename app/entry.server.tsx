@@ -12,7 +12,7 @@ import { RemixServer } from '@remix-run/react';
 import { isbot } from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { db } from './services/db.server';
-import { event } from 'db/schema';
+import { event, chatSession } from 'db/schema';
 import { and, eq, lt, or } from 'drizzle-orm';
 
 const ABORT_DELAY = 5_000;
@@ -147,15 +147,18 @@ async function deleteOldEventsFromDatabase() {
   return await db
     .delete(event)
     .where(
-      or(
-        and(lt(event.end_date, new Date()), eq(event.is_long_time, true)),
-        and(
-          lt(
-            event.end_date,
-            new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+      and(
+        or(
+          and(lt(event.end_date, new Date()), eq(event.is_long_time, true)),
+          and(
+            lt(
+              event.end_date,
+              new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+            ),
+            eq(event.is_long_time, false),
           ),
-          eq(event.is_long_time, false),
         ),
+        eq(event.loop, false),
       ),
     )
     .returning({
@@ -163,5 +166,73 @@ async function deleteOldEventsFromDatabase() {
     });
 }
 
-setInterval(() => deleteOldEventsFromDatabase(), 60 * 60 * 1000);
+async function getNextDate(date: Date, type: string) {
+  const currentTime = date.getTime();
+  const currentDate = date.getDate();
+  const currentMonth = date.getMonth();
+  const currentYear = date.getFullYear();
+  switch (type) {
+    case 'daily':
+      return new Date(currentTime + 24 * 60 * 60 * 1000);
+    case 'weekly':
+      return new Date(currentTime + 7 * 24 * 60 * 60 * 1000);
+    case 'monthly':
+      return new Date(currentYear, currentMonth + 1, currentDate);
+    case 'yearly':
+      return new Date(currentYear + 1, currentMonth, currentDate);
+  }
+}
+
+async function updateRepeatEvents() {
+  console.log('[DB] update repeat events');
+
+  const events = await db
+    .select()
+    .from(event)
+    .where(
+      and(
+        eq(event.loop, true),
+        lt(event.end_date, new Date(new Date().getTime())),
+      ),
+    );
+  await Promise.all(
+    events.map(async (eventData) => {
+      const Duration = eventData.loop_duration;
+      const nextStartDate = await getNextDate(eventData.start_date!, Duration!);
+      const nextEndDate = await getNextDate(eventData.end_date!, Duration!);
+      await db
+        .update(event)
+        .set({
+          start_date: nextStartDate,
+          end_date: nextEndDate,
+        })
+        .where(eq(event.id, eventData.id));
+    }),
+  );
+}
+
+async function renewUserChatCounts() {
+  let last = new Date().getTime();
+  return (async () => {
+    if (new Date().getTime() - last < 60 * 60 * 1000) {
+      return;
+    }
+    last = new Date().getTime();
+    console.log('[DB] renew user chat counts');
+    await db
+      .update(chatSession)
+      .set({
+        count: 5,
+      })
+      .where(eq(chatSession.count, 0));
+  })();
+}
+
+setInterval(() => {
+  deleteOldEventsFromDatabase();
+  updateRepeatEvents();
+  renewUserChatCounts();
+}, 60 * 60 * 1000);
 deleteOldEventsFromDatabase();
+updateRepeatEvents();
+renewUserChatCounts();

@@ -127,6 +127,41 @@
       "when": 1735828629616,
       "tag": "0017_burly_shiva",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1736067122994,
+      "tag": "0018_sour_drax",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1736167072408,
+      "tag": "0019_free_living_mummy",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1736167168137,
+      "tag": "0020_equal_kitty_pryde",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1736167214811,
+      "tag": "0021_elite_magik",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1736170598987,
+      "tag": "0022_loud_mentallo",
+      "breakpoints": true
     }
   ]
 }
