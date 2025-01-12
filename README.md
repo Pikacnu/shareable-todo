@@ -4,15 +4,20 @@
 This project is still on development
 Not all things is functional
 
-- [x] Own TodoList
 - [x] Shareable
 - [x] Personal Finish State
 - [x] Auto Remove Todo
 - [x] Repeat Todo
-- [x] Calendar Display
 - [x] Important Todo Display
-- [x] RWD
-- [ ] Work With AI
+- [x] Work With AI
+
+- [ ] PopUp
+- [ ] More Login method
+- [ ] AI tab Display Update
+- [ ] Rremake UI (add animation)
+- [ ] Light Mode
+- [ ] i18n
+
 
 ## Install
 
