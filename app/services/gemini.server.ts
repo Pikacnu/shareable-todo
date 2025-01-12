@@ -144,7 +144,7 @@ const generationConfig = {
             },
             action: {
               type: SchemaType.STRING,
-              enum: ['add', 'change', 'remove'],
+              enum: ['add', 'change', 'remove', 'nochange'],
             },
             list_id: {
               type: SchemaType.STRING,
@@ -177,7 +177,7 @@ const generationConfig = {
             },
             action: {
               type: SchemaType.STRING,
-              enum: ['add', 'change', 'remove'],
+              enum: ['add', 'change', 'remove', 'nochange'],
             },
             list_id: {
               type: SchemaType.STRING,
@@ -336,13 +336,63 @@ const defaultHistory: Content[] = [
       },
     ],
   },
+  {
+    role: 'model',
+    parts: [
+      {
+        text: '```json\n{\n  "change-events": [],\n  "change-todo-lists": [],\n  "response": "There are no lists"\n}\n```',
+      },
+    ],
+  },
+  {
+    role: 'user',
+    parts: [{ text: '新增一個數學作業列表' }],
+  },
+  {
+    role: 'model',
+    parts: [
+      {
+        text: '```json\n{\n  "change-events": [],\n  "change-todo-lists": [\n    {\n      "action": "add",\n      "list_id": "math-homework-list",\n      "title": "數學作業列表",\n      "description": "數學作業相關的列表"\n    }\n  ],\n  "response": "已新增數學作業列表"\n}\n```',
+      },
+    ],
+  },
+  {
+    role: 'user',
+    parts: [{ text: '顯示所有 list' }],
+  },
+  {
+    role: 'model',
+    parts: [
+      {
+        text: '```json\n{\n  "change-events": [],\n  "change-todo-lists": [\n    {\n      "action": "nochange",\n      "list_id": "math-homework-list",\n      "title": "數學作業列表",\n      "description": "數學作業相關的列表"\n    }\n  ],\n  "response": "Here are all the lists"\n}\n```',
+      },
+    ],
+  },
+  {
+    role: 'user',
+    parts: [{ text: '刪除數學作業' }],
+  },
+  {
+    role: 'model',
+    parts: [
+      {
+        text: '```json\n{\n  "change-events": [],\n  "change-todo-lists": [\n    {\n      "action": "remove",\n      "list_id": "math-homework-list",\n      "title": "數學作業列表",\n      "description": "數學作業相關的列表"\n    }\n  ],\n  "response": "已刪除數學作業列表"\n}\n```',
+      },
+    ],
+  },
 ];
 
 export async function generateChange(
   input: string,
   data: {
-    todolists: string;
-    todos: string;
+    current: {
+      todoLists: string;
+      todos: string;
+    };
+    change: {
+      todoLists: string;
+      todos: string;
+    };
   },
   history?: Content[],
 ) {
@@ -354,11 +404,12 @@ export async function generateChange(
 
     const result = await chatSession.sendMessage(
       `現在時間 : ${new Date().toLocaleString()}\n代辦事項清單 : \n${
-        data.todolists
-      }\n待辦事項 : \n${data.todos}\n輸入 : ${input}`,
+        data.current.todoLists
+      }\n待辦事項 : \n${data.current.todos}\n當前代辦事項清單變更:${
+        data.change.todoLists
+      }\n當前代辦事項變更:${data.change.todos}\n輸入 : ${input}`,
     );
     const resultJSON = await JSON.parse(result.response.text());
-    console.log(resultJSON);
     return resultJSON;
   } catch (e) {
     console.log(e);

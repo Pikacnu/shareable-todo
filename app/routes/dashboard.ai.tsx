@@ -65,6 +65,7 @@ enum ChangeType {
   Add = 'add',
   Remove = 'remove',
   Update = 'update',
+  NoChange = 'nochange',
 }
 
 enum RepeatDuration {
@@ -130,7 +131,11 @@ export default function AI() {
     formData.append('text', input.current.value);
     const res = await fetch('/api/ai', {
       method: 'POST',
-      body: JSON.stringify({ text: text }),
+      body: JSON.stringify({
+        text: text,
+        pendingChange: todoChanges,
+        pendingListChange: todoListChanges,
+      }),
     });
     setPending(false);
     const data = await res.json();
@@ -156,7 +161,7 @@ export default function AI() {
     ]);
     setTodoChanges((prev) => [...prev, ...data['change-events']]);
     setTodoListChanges((prev) => [...prev, ...data['change-todo-lists']]);
-  }, [last]);
+  }, [last, todoChanges, todoListChanges]);
   useEffect(() => {
     if (document) {
       document.addEventListener('keydown', (e) => {
@@ -173,6 +178,12 @@ export default function AI() {
       };
     }
   }, [send]);
+  const ActionColorMap = new Map<ChangeType, string>([
+    [ChangeType.Add, 'bg-green-300'],
+    [ChangeType.Remove, 'bg-red-500'],
+    [ChangeType.Update, 'bg-yellow-500'],
+    [ChangeType.NoChange, 'bg-gray-200'],
+  ]);
   return (
     <div className="flex flex-col w-full h-[80vh] justify-center items-center">
       <div className="flex-grow bg-gray-500 w-[90vw] rounded-lg overflow-y-auto *:w-1/2 text-black flex flex-row ">
@@ -205,9 +216,7 @@ export default function AI() {
             <div key={todoListChange.list_id} className="flex flex-col gap-4">
               <div
                 className={`bg-gray-300 p-2 rounded-lg ${
-                  todoListChange.action === ChangeType.Remove
-                    ? 'bg-red-500'
-                    : 'bg-green-400'
+                  ActionColorMap.get(todoListChange.action) || ''
                 }`}
               >
                 <h1>{todoListChange.title}</h1>
@@ -315,6 +324,9 @@ export default function AI() {
               method: 'PUT',
               action: '/api/ai',
             });
+            setTodoChanges([]);
+            setTodoListChanges([]);
+            setHistory([]);
           }}
         >
           <img
@@ -330,6 +342,9 @@ export default function AI() {
               method: 'DELETE',
               action: '/api/ai',
             });
+            setTodoChanges([]);
+            setTodoListChanges([]);
+            setHistory([]);
           }}
         >
           <img

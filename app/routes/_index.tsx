@@ -83,7 +83,13 @@ export default function Index() {
           </div>
 
           <div>
-            <div className="w-1/2 flex-shrink-0"></div>
+            <div className="w-1/2 flex-shrink-0 flex justify-center">
+              <img
+                src="/method-img/work-with-ai.svg"
+                alt=""
+                className="self-center w-1/2"
+              />
+            </div>
             <div className="m-4 rounded-lg bg-gray-200 p-4 w-full">
               <h1 className="text-2xl">AI-Powered Suggestions</h1>
               <p>

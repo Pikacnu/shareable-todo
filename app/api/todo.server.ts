@@ -99,6 +99,8 @@ export const POST = async (request: Request) => {
           start_date: startDatetime,
           end_date: endDatetime,
           creater_id: userID,
+          loop: loop,
+          loop_duration: loopDuration,
         })
         .returning({
           id: event.id,

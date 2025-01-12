@@ -1,6 +1,6 @@
 import { ActionFunction, ActionFunctionArgs } from '@remix-run/node';
 import { getUserDataByRequest, UserData } from '~/function/getUserData';
-import { POST } from '~/api/todo.finish';
+import { POST } from '~/api/todo.finish.server';
 
 export const action: ActionFunction = async ({
   request,
