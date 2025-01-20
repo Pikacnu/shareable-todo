@@ -142,7 +142,7 @@ export default function Add() {
                 onChange={(e) => setIsToday(e.target.checked)}
               />
               <label htmlFor="Today" className=" select-none">
-                Is only for today?
+                Only valid today
               </label>
             </div>
             <div
@@ -152,7 +152,7 @@ export default function Add() {
               }
             >
               <div className="flex flex-row justify-between ">
-                <label htmlFor="startDateTime">Start Date</label>
+                <label htmlFor="startDateTime">Start Time</label>
                 <input
                   disabled={isToday}
                   type="datetime-local"
@@ -162,7 +162,7 @@ export default function Add() {
                 />
               </div>
               <div className="flex justify-between">
-                <label htmlFor="endDateTime">End Date</label>
+                <label htmlFor="endDateTime">End Time</label>
                 <input
                   disabled={isToday}
                   type="datetime-local"
@@ -271,7 +271,7 @@ export default function Add() {
               );
             }}
           >
-            add
+             Add a new task
           </button>
           <button
             className="bg-gray-800 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
@@ -289,7 +289,7 @@ export default function Add() {
               )
             }
           >
-            add others with same option
+            Add multiple tasks with these settings
           </button>
         </div>
       </div>

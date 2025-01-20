@@ -30,13 +30,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const todoLists = await getTodoLists(userInfoFromDB.id);
     return {
       todolists: todoLists,
-      url: process.env.URL,
+      url: Bun.env.URL,
     };
   } catch (e) {
     console.log(e);
     return {
       todolists: [],
-      url: process.env.URL,
+      url: Bun.env.URL,
     };
   }
 };
@@ -58,9 +58,7 @@ export default function TodoLists() {
           className="p-2 w-32 bg-green-600"
           onClick={() => {
             const formData = new FormData();
-            if (
-              title.current?.value.trim().length === 0
-            ) {
+            if (title.current?.value.trim().length === 0) {
               return alert('title and description is required');
             }
             formData.append('title', title.current?.value || '');

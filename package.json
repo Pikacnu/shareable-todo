@@ -17,6 +17,7 @@
     "@remix-run/node": "^2.12.1",
     "@remix-run/react": "^2.12.1",
     "@remix-run/serve": "^2.12.1",
+    "@types/bun": "^1.1.17",
     "drizzle-orm": "^0.34.1",
     "isbot": "^4.1.0",
     "postgres": "^3.4.4",

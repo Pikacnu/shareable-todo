@@ -11,13 +11,6 @@ Not all things is functional
 - [x] Important Todo Display
 - [x] Work With AI
 
-- [ ] PopUp
-- [ ] More Login method
-- [ ] AI tab Display Update
-- [ ] Rremake UI (add animation)
-- [ ] Light Mode
-- [ ] i18n
-
 
 ## Install
 
