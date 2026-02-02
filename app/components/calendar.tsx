@@ -58,22 +58,22 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
   const yearDisplay = new Date().getFullYear() + Math.floor(month / 12);
 
   return (
-    <div className="w-full h-full grid grid-rows-7 grid-cols-7 text-amber-600 *:text-center relative *:select-none bg-orange-100 rounded-lg">
-      <div className="items-center justify-center flex">
+    <div className="w-full h-full grid grid-rows-7 grid-cols-7 text-slate-700 *:text-center relative *:select-none bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="items-center justify-center flex bg-slate-50">
         <button
           onClick={() => setMonth((prev) => prev - 1)}
-          className=" hover:bg-black/40 font-bold rounded-lg p-2 px-4"
+          className="hover:bg-slate-200/70 text-slate-600 font-semibold rounded-lg p-2 px-4 transition-colors"
         >
           <ChevronLeft />
         </button>
       </div>
-      <div className=" flex grid-cols-subgrid col-span-5 items-center justify-center text-center">
+      <div className="flex grid-cols-subgrid col-span-5 items-center justify-center text-center bg-slate-50 font-semibold text-slate-800">
         {yearDisplay}/{monthDisplay + 1}
       </div>
-      <div className="items-center justify-center flex">
+      <div className="items-center justify-center flex bg-slate-50">
         <button
           onClick={() => setMonth((prev) => prev + 1)}
-          className="hover:bg-black/40 font-bold rounded-lg p-2 px-4"
+          className="hover:bg-slate-200/70 text-slate-600 font-semibold rounded-lg p-2 px-4 transition-colors"
         >
           <ChevronRight />
         </button>
@@ -100,22 +100,21 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
             return false;
           });
           const countsOfEventOnThisDate = DuringThisDate?.length || 0;
+          const isOutsideMonth = dateInfo.monthDelta !== 0;
+          const hasEvents = countsOfEventOnThisDate > 0;
           if (dateInfo.today) {
             return (
               <div
                 key={`${dateInfo.day}-${dateInfo.monthDelta}`}
-                className="bg-black/5 rounded-md flex flex-col"
+                className="bg-indigo-50 border border-indigo-200 rounded-lg flex flex-col m-1"
               >
                 <p className="self-end">
-                  <span className="p-2">{dateInfo.day}</span>
+                  <span className="p-2 text-indigo-700 font-semibold">
+                    {dateInfo.day}
+                  </span>
                 </p>
-                <span
-                  className={`${
-                    countsOfEventOnThisDate > 0 && 'text-gray-800'
-                  }`}
-                >
-                  {countsOfEventOnThisDate > 0 &&
-                    `${countsOfEventOnThisDate} Events`}
+                <span className="text-sm text-indigo-700">
+                  {hasEvents && `${countsOfEventOnThisDate} Events`}
                 </span>
               </div>
             );
@@ -123,18 +122,15 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
           return (
             <div
               key={`${dateInfo.day}-${dateInfo.monthDelta}`}
-              className="flex flex-col"
+              className={`flex flex-col m-1 rounded-lg border border-transparent ${
+                isOutsideMonth ? 'text-slate-300' : 'text-slate-700'
+              } ${hasEvents ? 'bg-amber-50' : 'bg-white'}`}
             >
               <p className="self-end">
                 <span className="p-2">{dateInfo.day}</span>
               </p>
-              <span
-                className={`${
-                  countsOfEventOnThisDate > 0 ? 'text-red-400' : 'text-gray-200'
-                }`}
-              >
-                {countsOfEventOnThisDate > 0 &&
-                  `${countsOfEventOnThisDate} Events`}
+              <span className={hasEvents ? 'text-amber-600' : 'text-slate-200'}>
+                {hasEvents && `${countsOfEventOnThisDate} Events`}
               </span>
             </div>
           );
