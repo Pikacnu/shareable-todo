@@ -109,11 +109,11 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
                 className="bg-indigo-50 border border-indigo-200 rounded-lg flex flex-col m-1"
               >
                 <p className="self-end">
-                  <span className="p-2 text-indigo-700 font-semibold">
+                  <span className="p-2 text-blue-700 font-semibold">
                     {dateInfo.day}
                   </span>
                 </p>
-                <span className="text-sm text-indigo-700">
+                <span className="text-sm text-blue-700">
                   {hasEvents && `${countsOfEventOnThisDate} Events`}
                 </span>
               </div>
