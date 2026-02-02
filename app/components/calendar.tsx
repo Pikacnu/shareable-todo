@@ -13,11 +13,13 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
   const { weekDateInfo, currentMonth, currentYear } = useMemo(() => {
     const today = new Date();
     const firstDayOfTheMonth = new Date(today.getFullYear(), month, 1);
-    const lastDayOfTheMonth = new Date(today.getFullYear(), month + 1, 0);
+    const displayYear = firstDayOfTheMonth.getFullYear();
+    const displayMonth = firstDayOfTheMonth.getMonth();
+    const lastDayOfTheMonth = new Date(displayYear, displayMonth + 1, 0);
     const dayCountsOfTheMonth = lastDayOfTheMonth.getDate();
 
     const firstDayWeek = firstDayOfTheMonth.getDay();
-    const prevMonthLastDate = new Date(today.getFullYear(), month, 0).getDate();
+    const prevMonthLastDate = new Date(displayYear, displayMonth, 0).getDate();
 
     const prevMonth = Array(firstDayWeek)
       .fill(0)
@@ -31,10 +33,13 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
       .map((_, i) => ({
         day: i + 1,
         monthDelta: 0,
-        today: today.getDate() === i + 1 && today.getMonth() === month,
+        today:
+          today.getDate() === i + 1 &&
+          today.getMonth() === displayMonth &&
+          today.getFullYear() === displayYear,
       }));
 
-    const nextMonth = Array(42 - (prevMonth.length + currentMonth.length))
+    const nextMonth = Array(7 * 6 - (prevMonth.length + currentMonth.length))
       .fill(0)
       .map((_, i) => ({
         day: i + 1,
@@ -44,8 +49,8 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
 
     return {
       weekDateInfo,
-      currentMonth: month,
-      currentYear: today.getFullYear(),
+      currentMonth: displayMonth,
+      currentYear: displayYear,
     };
   }, [month]);
 
@@ -83,7 +88,7 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
                 .toString()
                 .padStart(2, '0')}-${dateInfo.day.toString().padStart(2, '0')}`,
             );
-            if (todo.isToday && startDate.getTime() == now.getTime()) {
+            if (todo.isToday && startDate.getTime() === now.getTime()) {
               return true;
             }
             if (
