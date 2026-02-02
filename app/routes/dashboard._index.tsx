@@ -42,14 +42,14 @@ export default function Dashboard() {
     <div className="flex flex-col lg:flex-row justify-between max-w-screen w-full h-screen lg:h-[80vh] items-center relative overflow-y-auto lg:overflow-hidden">
       <div className="lg:m-4 flex-grow flex flex-col lg:h-full h-full *:min-h-[30vh] relative [&>div>h1]:bg-gray-500 max-lg:w-[80vw] lg:[&>div>h1]:w-1/4 [&>div>h1]:m-2 [&>div>h1]:text-black [&>div>h1]:text-center [&>div>h1]:p-2 ">
         <div className="flex flex-col w-full relative h-full max-md:min-h-[50vh] md:min-h-[30vh]">
-          <h1>calendar</h1>
-          <div className="w-full h-full dark:bg-gray-600 bg-stone-400 relative lg:text-xl text-xs md:text-xl">
+          <h1>Calendar</h1>
+          <div className="w-full h-full relative lg:text-xl text-xs md:text-xl">
             <Calendar todoListData={todoListData} />
           </div>
         </div>
         <div className="flex flex-col lg:max-h-[30vh] h-full">
           <h1>{'Near End Todo'}</h1>
-          <div className="w-full h-full dark:bg-gray-600 bg-stone-400 flex flex-col text-black overflow-y-auto *:m-4">
+          <div className="w-full h-full flex flex-col text-black overflow-y-auto *:m-4 rounded-lg bg-stone-400 gap-2">
             {todoListData.map((todo) => {
               if (todo.finished) return null;
               if (
@@ -101,7 +101,7 @@ export default function Dashboard() {
       </div>
       <div className=" m-4 h-full w-[80vw] lg:w-[40vw] text-black flex flex-col">
         <h1 className="bg-slate-500 m-2 p-2 w-1/4 text-center">Todos</h1>
-        <div className="dark:bg-gray-600 bg-stone-400 flex-grow overflow-y-auto">
+        <div className="bg-stone-400 flex-grow overflow-y-auto rounded-lg">
           {todolists.map((todoList) => {
             if (todoList.Todo.length === 0) return null;
             return (

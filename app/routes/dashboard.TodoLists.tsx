@@ -30,13 +30,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const todoLists = await getTodoLists(userInfoFromDB.id);
     return {
       todolists: todoLists,
-      url: Bun.env.URL,
+      url: process.env.URL,
     };
   } catch (e) {
     console.log(e);
     return {
       todolists: [],
-      url: Bun.env.URL,
+      url: process.env.URL,
     };
   }
 };

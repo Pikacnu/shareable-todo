@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Todo } from './tododroplist';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface DateInfo {
   day: number;
@@ -9,73 +10,71 @@ interface DateInfo {
 
 export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
   const [month, setMonth] = useState(new Date().getMonth());
-  const data = useMemo(() => {
+  const { weekDateInfo, currentMonth, currentYear } = useMemo(() => {
     const today = new Date();
-    const firstDay = new Date(today.getFullYear(), month, 1);
-    const lastDay = new Date(today.getFullYear(), month + 1, 0);
-    const daysOfTheMonth = lastDay.getDate();
+    const firstDayOfTheMonth = new Date(today.getFullYear(), month, 1);
+    const lastDayOfTheMonth = new Date(today.getFullYear(), month + 1, 0);
+    const dayCountsOfTheMonth = lastDayOfTheMonth.getDate();
 
-    const firstDayWeek = firstDay.getDay();
-    const prevLastDate = new Date(today.getFullYear(), month, 0).getDate();
-    const prev = Array(firstDayWeek)
+    const firstDayWeek = firstDayOfTheMonth.getDay();
+    const prevMonthLastDate = new Date(today.getFullYear(), month, 0).getDate();
+
+    const prevMonth = Array(firstDayWeek)
       .fill(0)
       .map((_, i) => ({
-        day: prevLastDate - firstDayWeek + i + 1,
+        day: prevMonthLastDate - firstDayWeek + i + 1,
         monthDelta: -1,
       }));
-    const current = Array(daysOfTheMonth)
+
+    const currentMonth = Array(dayCountsOfTheMonth)
       .fill(0)
       .map((_, i) => ({
         day: i + 1,
         monthDelta: 0,
         today: today.getDate() === i + 1 && today.getMonth() === month,
       }));
-    const next = Array(42 - (prev.length + current.length))
+
+    const nextMonth = Array(42 - (prevMonth.length + currentMonth.length))
       .fill(0)
       .map((_, i) => ({
         day: i + 1,
         monthDelta: 1,
       }));
-    const data: DateInfo[][] = [prev, current, next];
+    const weekDateInfo: DateInfo[][] = [prevMonth, currentMonth, nextMonth];
 
-    return data;
+    return {
+      weekDateInfo,
+      currentMonth: month,
+      currentYear: today.getFullYear(),
+    };
   }, [month]);
 
   const monthDisplay = month < 0 ? 12 + (month % 12) : month % 12;
   const yearDisplay = new Date().getFullYear() + Math.floor(month / 12);
 
   return (
-    <div className="w-full h-full grid grid-rows-7 grid-cols-7 text-black *:outline-1 *:outline *:outline-black *:text-center relative *:select-none">
-      <div className=" absolute w-full h-full grid grid-rows-7 grid-cols-7 pointer-events-none">
-        <div className="flex grid-cols-subgrid col-span-7"></div>
-        <div className="flex flex-col-reverse grid-cols-subgrid col-span-7 relative h-full *:outline-slate-50 *:border *:rounded-lg"></div>
-        <div className="flex flex-col-reverse grid-cols-subgrid col-span-7 relative h-full *:outline-slate-50 *:border *:rounded-lg"></div>
-        <div className="flex flex-col-reverse grid-cols-subgrid col-span-7 relative h-full *:outline-slate-50 *:border *:rounded-lg"></div>
-        <div className="flex flex-col-reverse grid-cols-subgrid col-span-7 relative h-full *:outline-slate-50 *:border *:rounded-lg"></div>
-        <div className="flex flex-col-reverse grid-cols-subgrid col-span-7 relative h-full *:outline-slate-50 *:border *:rounded-lg"></div>
-        <div className="flex flex-col-reverse grid-cols-subgrid col-span-7 relative h-full *:outline-slate-50 *:border *:rounded-lg"></div>
+    <div className="w-full h-full grid grid-rows-7 grid-cols-7 text-amber-600 *:text-center relative *:select-none bg-orange-100 rounded-lg">
+      <div className="items-center justify-center flex">
+        <button
+          onClick={() => setMonth((prev) => prev - 1)}
+          className=" hover:bg-black/40 font-bold rounded-lg p-2 px-4"
+        >
+          <ChevronLeft />
+        </button>
       </div>
-      <button
-        onClick={() => setMonth((prev) => prev - 1)}
-        className="bg-gray-700 hover:bg-gray-400 text-white font-bold"
-      >
-        prev
-      </button>
       <div className=" flex grid-cols-subgrid col-span-5 items-center justify-center text-center">
         {yearDisplay}/{monthDisplay + 1}
       </div>
-      <button
-        onClick={() => setMonth((prev) => prev + 1)}
-        className="bg-gray-700 hover:bg-gray-400 text-white font-bold"
-      >
-        next
-      </button>
-      {data.map((week) =>
-        week.map((dateInfo) => {
-          const currentMonth = (month + dateInfo.monthDelta + 12) % 12;
-          const currentYear =
-            new Date().getFullYear() +
-            Math.floor((month + dateInfo.monthDelta) / 12);
+      <div className="items-center justify-center flex">
+        <button
+          onClick={() => setMonth((prev) => prev + 1)}
+          className="hover:bg-black/40 font-bold rounded-lg p-2 px-4"
+        >
+          <ChevronRight />
+        </button>
+      </div>
+      {weekDateInfo.map((week) => {
+        return week.map((dateInfo) => {
           const DuringThisDate = todoListData?.filter((todo) => {
             const startDate = new Date((todo?.startTime || '')?.slice(0, 10));
             const endDate = new Date((todo?.endTime || '')?.slice(0, 10));
@@ -100,46 +99,42 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
             return (
               <div
                 key={`${dateInfo.day}-${dateInfo.monthDelta}`}
-                className={` bg-yellow-400`}
+                className="bg-black/5 rounded-md flex flex-col"
               >
-                <p>{dateInfo.day}</p>
-
-                <p
-                  className={`${
-                    countsOfEventOnThisDate > 0
-                      ? 'text-gray-400'
-                      : 'text-gray-600'
-                  }
-                  `}
-                >
-                  {countsOfEventOnThisDate > 0
-                    ? `${countsOfEventOnThisDate} Events`
-                    : 'No Event'}
+                <p className="self-end">
+                  <span className="p-2">{dateInfo.day}</span>
                 </p>
+                <span
+                  className={`${
+                    countsOfEventOnThisDate > 0 && 'text-gray-800'
+                  }`}
+                >
+                  {countsOfEventOnThisDate > 0 &&
+                    `${countsOfEventOnThisDate} Events`}
+                </span>
               </div>
             );
           }
           return (
             <div
               key={`${dateInfo.day}-${dateInfo.monthDelta}`}
-              className={`${
-                dateInfo.monthDelta === 0 ? 'text-gray-400' : ' text-gray-400'
-              } `}
+              className="flex flex-col"
             >
-              {dateInfo.day}
-              <p
+              <p className="self-end">
+                <span className="p-2">{dateInfo.day}</span>
+              </p>
+              <span
                 className={`${
                   countsOfEventOnThisDate > 0 ? 'text-red-400' : 'text-gray-200'
                 }`}
               >
-                {countsOfEventOnThisDate > 0
-                  ? `${countsOfEventOnThisDate} Events`
-                  : 'No Event'}
-              </p>
+                {countsOfEventOnThisDate > 0 &&
+                  `${countsOfEventOnThisDate} Events`}
+              </span>
             </div>
           );
-        }),
-      )}
+        });
+      })}
     </div>
   );
 }

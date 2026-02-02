@@ -1,6 +1,13 @@
 import { LoaderFunctionArgs } from '@remix-run/node';
 import { authenticator } from '~/services/auth.server';
 import { Outlet, Link } from '@remix-run/react';
+import {
+  LayoutDashboard,
+  CirclePlus,
+  List,
+  MessageCircle,
+  LogOut,
+} from 'lucide-react';
 
 export const loader = ({ request }: LoaderFunctionArgs) => {
   return authenticator.isAuthenticated(request, {
@@ -17,24 +24,22 @@ export default function Dashboard() {
       <div className="m-4 p-4 fixed md:relative w-4/5 md:w-auto bottom-0 md:h-[80%] bg-white rounded-3xl text-black flex flex-row md:flex-col justify-between text-sm md:text-xl">
         <div className="flex flex-row md:flex-col items-center *:ml-2 md:*:ml-0 md:*:mt-4 max-md:[&>a>img]:w-6 md:[&>a>img]:w-8 [&>a>p]:hidden md:[&>a>p]:block *:flex *:flex-col *:items-center text-lg">
           <Link to={'/dashboard'}>
-            <img src="/icons/dashboard.svg" alt="Dashboard" />
-            <p>Dashboard</p>
+            <LayoutDashboard />
           </Link>
           <Link to={'/dashboard/add'}>
-            <img src="/icons/add.svg" alt="Add" />
-            <p>Add</p>
+            <CirclePlus />
           </Link>
           <Link to={'/dashboard/todoLists'}>
-            <img src="/icons/list.svg" alt="TodoList" />
-            <p>TodoList</p>
+            <List />
           </Link>
           <Link to={'/dashboard/ai'}>
-            <img src="/icons/chat.svg" alt="AI" />
-            <p>AI</p>
+            <MessageCircle />
           </Link>
         </div>
         <div>
-          <Link to={'/logout'}>Logout</Link>
+          <Link to={'/logout'}>
+            <LogOut />
+          </Link>
         </div>
       </div>
     </div>
