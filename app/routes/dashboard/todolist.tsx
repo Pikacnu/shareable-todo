@@ -75,7 +75,7 @@ export default function Todolist() {
             : undefined
         }
       />
-      <div className="flex m-4 max-md:mb-0 justify-between items-center flex-col sticky bottom-0 bg-white/10 md:rounded-xl w-11/12 md:w-2/3">
+      <div className="flex m-4 md:fixed max-md:mb-0 justify-between items-center flex-col sticky bottom-0 bg-white/5 outline-1 outline-gray-400/40 md:rounded-xl w-11/12 md:w-2/3 backdrop-blur-md">
         {blocker.state === 'blocked' && (
           <div className="text-white bg-red-600 p-2 w-full absolute h-full z-10 top-0 left-0 flex flex-col items-center justify-center">
             <p className="bg-red-600">
@@ -124,7 +124,7 @@ export default function Todolist() {
           onReset={() => setIsDirty(false)}
           ref={formData}
         >
-          <div className="flex flex-col bg-white/10 *:p-3 grow text-sm lg:text-xl *:grow gap-4 rounded-xl *:rounded-xl *:text-lg">
+          <div className="flex flex-col bg-white/5 outline-1 outline-gray-400/40 *:p-3 grow text-sm lg:text-xl *:grow gap-4 rounded-xl *:rounded-xl *:text-lg *:bg-transparent *:outline-none">
             <input type="text" placeholder="Title" name="title" ref={title} />
             <input
               type="text"
@@ -134,7 +134,10 @@ export default function Todolist() {
             />
           </div>
           <div className="flex items-center">
-            <button className="p-2 bg-green-600 rounded-lg" type="submit">
+            <button
+              className="p-2 bg-green-600 hover:bg-green-500 transition-colors rounded-lg text-white"
+              type="submit"
+            >
               <FolderPlus />
             </button>
           </div>

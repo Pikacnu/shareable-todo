@@ -86,9 +86,9 @@ export function DropList({
         return (
           <div
             key={todoList.id}
-            className="flex flex-col lg:justify-between m-2 bg-slate-700 rounded-xl shadow-md"
+            className="flex flex-col lg:justify-between m-2 bg-white/5 outline outline-1 outline-gray-400/40 rounded-xl shadow-md"
           >
-            <div className="flex flex-row justify-between items-center max-lg:flex-col my-4 mx-2 relative">
+            <div className="flex flex-row justify-between items-center max-lg:flex-col my-4 mx-2 relative text-white">
               <TodoListEdit
                 className=" flex-grow flex max-lg:justify-between max-lg:text-lg *:ml-4 self-start max-lg:w-full max-lg:pr-2 max-lg:my-2"
                 id={todoList.id}
@@ -171,22 +171,28 @@ export function DropList({
             <div
               className={`flex flex-col ${
                 isOpen ? 'flex' : 'hidden'
-              } bg-slate-500 lg:m-4 max-lg:rounded-b-xl p-2 gap-2`}
+              } bg-white/5 outline outline-1 outline-gray-400/20 lg:m-4 max-lg:rounded-b-xl p-2 gap-2 rounded-lg`}
               hidden={!isOpen}
             >
               {todoList.Todo.length === 0 ? (
-                <div className="text-xl text-center my-4">Nothing Here</div>
+                <div className="text-xl text-center my-4 text-slate-400">
+                  Nothing Here
+                </div>
               ) : (
                 todoList.Todo.map((todo) => {
                   return (
                     <div
                       key={todo.id}
-                      className="flex flex-row justify-between items-center relative"
+                      className="flex flex-row justify-between items-center relative bg-white/5 rounded-lg p-2 outline outline-1 outline-gray-400/10"
                     >
                       <div className="flex flex-row justify-around *:m-2 items-center overflow-hidden *:overflow-clip max-lg:*:max-w-36">
-                        <h1 className="font-semibold text-lg">{todo.title}</h1>
-                        <p className="text-sm">{todo.description}</p>
-                        <p className=" text-sm text-gray-200 underline underline-offset-2">
+                        <h1 className="font-semibold text-lg text-white">
+                          {todo.title}
+                        </h1>
+                        <p className="text-sm text-slate-400">
+                          {todo.description}
+                        </p>
+                        <p className=" text-sm text-green-500/70 underline underline-offset-2 font-mono">
                           {todo.isToday
                             ? (() => {
                                 const dDate =
@@ -198,7 +204,6 @@ export function DropList({
                                   return `${dDate} day ago`;
                                 }
                                 return `${-dDate} days after`;
-                                 
                               })()
                             : todo.datetime.slice(0, 10)}
                         </p>

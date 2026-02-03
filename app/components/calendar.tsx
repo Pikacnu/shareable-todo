@@ -180,18 +180,18 @@ export default function Calendar({
   const yearDisplay = new Date().getFullYear() + Math.floor(month / 12);
 
   return (
-    <div className="w-full h-full grid grid-rows-7 grid-cols-7 text-slate-700 *:text-center relative *:select-none bg-white rounded-xl shadow-sm overflow-hidden">
-      <div className="items-center justify-center flex bg-slate-50">
+    <div className="w-full h-full grid grid-rows-7 grid-cols-7 text-white *:text-center relative *:select-none bg-slate-800/40 outline outline-1 outline-gray-400/20 rounded-xl shadow-inner overflow-hidden backdrop-blur-sm">
+      <div className="items-center justify-center flex bg-black/40">
         <button
           onClick={() => setMonth((prev) => prev - 1)}
-          className="hover:bg-slate-200/70 text-slate-600 font-semibold rounded-lg p-2 px-4 transition-colors"
+          className="hover:bg-white/10 text-white font-semibold rounded-lg p-2 px-4 transition-colors"
         >
           <ChevronLeft />
         </button>
       </div>
       <button
-        className={`flex grid-cols-subgrid col-span-5 items-center justify-center text-center font-semibold text-slate-800 gap-2 hover:bg-black/10 transition-colors duration-200 ${
-          isInSelectingState ? 'bg-cyan-800/80' : 'bg-slate-50'
+        className={`flex grid-cols-subgrid col-span-5 items-center justify-center text-center font-semibold text-white gap-2 hover:bg-white/10 transition-colors duration-200 ${
+          isInSelectingState ? 'bg-green-600/60 text-white' : 'bg-black/40'
         }`}
         onClick={() => {
           if (!isRangeSelection && !isMultipleSelection) {
@@ -242,14 +242,15 @@ export default function Calendar({
         <span>/</span>
         <span>{monthDisplay + 1}</span>
       </button>
-      <div className="items-center justify-center flex bg-slate-50">
+      <div className="items-center justify-center flex bg-black/40">
         <button
           onClick={() => setMonth((prev) => prev + 1)}
-          className="hover:bg-slate-200/70 text-slate-600 font-semibold rounded-lg p-2 px-4 transition-colors"
+          className="hover:bg-white/10 text-white font-semibold rounded-lg p-2 px-4 transition-colors"
         >
           <ChevronRight />
         </button>
       </div>
+
       {weekDateInfo.map((week) => {
         return week.map((dateInfo) => {
           const DuringThisDate = todoListData?.filter((todo) => {
@@ -306,17 +307,21 @@ export default function Calendar({
             return (
               <button
                 key={`${dateInfo.day}-${dateInfo.monthDelta}`}
-                className={`bg-indigo-50 border border-indigo-200 rounded-lg flex flex-col m-1`}
+                className={`flex flex-col m-1 rounded-lg border transition-all ${
+                  isHightlight
+                    ? 'bg-green-500 border-green-400 text-white shadow-[0_0_15px_rgba(34,197,94,0.4)]'
+                    : 'bg-green-600/30 border-green-500/50 hover:bg-green-600/40 text-white'
+                }`}
                 onClick={() => {
                   dateButtonHandler(date);
                 }}
               >
                 <p className="self-end text-lg">
-                  <span className="p-2 text-blue-700 font-semibold">
+                  <span className="p-2 text-green-400 font-bold">
                     {dateInfo.day}
                   </span>
                 </p>
-                <span className="text-sm text-blue-700 max-md:text-lg">
+                <span className="text-sm text-green-300 max-md:text-lg">
                   {hasEvents && `${countsOfEventOnThisDate} Events`}
                 </span>
               </button>
@@ -328,18 +333,27 @@ export default function Calendar({
                 dateButtonHandler(date);
               }}
               key={`${dateInfo.day}-${dateInfo.monthDelta}`}
-              className={`flex flex-col m-1 rounded-lg border border-transparent ${
-                isOutsideMonth ? 'text-slate-300' : 'text-slate-700'
-              } ${hasEvents ? 'bg-amber-50' : 'bg-white'} ${
-                isHightlight && 'bg-yellow-100'
-              } hover:bg-slate-100 transition-colors`}
+              className={`flex flex-col m-1 rounded-lg border border-transparent transition-all outline outline-1 outline-gray-400/20 
+                ${isOutsideMonth ? 'text-white/20' : 'text-white'} 
+                ${
+                  isHightlight
+                    ? 'bg-green-600 text-white shadow-lg z-10'
+                    : hasEvents
+                      ? 'bg-white/15'
+                      : 'bg-white/5'
+                } 
+                hover:bg-white/20`}
             >
               <p className="self-end text-base">
                 <span className="p-2">{dateInfo.day}</span>
               </p>
               <span
                 className={`${
-                  hasEvents ? 'text-amber-600' : 'text-slate-500'
+                  isHightlight
+                    ? 'text-green-200'
+                    : hasEvents
+                      ? 'text-green-500'
+                      : 'text-white/40'
                 } max-md:text-xs text-sm`}
               >
                 {hasEvents && `${countsOfEventOnThisDate} Events`}

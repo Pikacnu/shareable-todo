@@ -14,7 +14,7 @@ function LoginWith({ providor }: { providor: AuthType }) {
   return (
     <button
       onClick={handleLogin}
-      className="flex bg-gray-800 bg-opacity-30 rounded-2xl p-2 m-2 text-lg items-center *:m-2"
+      className="flex bg-white/5 hover:bg-white/10 outline outline-1 outline-gray-400/20 rounded-2xl p-2 m-2 text-lg items-center *:m-2 transition-all w-full justify-center text-white"
     >
       <img
         src={`/icons/${providor}.svg`}
@@ -34,16 +34,21 @@ export function loader({ request }: LoaderFunctionArgs) {
 
 export default function Login() {
   return (
-    <div className="flex flex-row w-full h-full overflow-hidden">
-      <div className="flex flex-col w-full md:w-1/3 bg-gray-500 bg-opacity-40 *:w-full">
-        <div className="h-1/4 flex items-end justify-center">
-          <h1 className="text-2xl text-center">Login</h1>
+    <div className="flex flex-row w-full h-full overflow-hidden text-white">
+      <div className="flex flex-col w-full md:w-1/3 bg-white/5 outline outline-1 outline-gray-400/40 *:w-full justify-center">
+        <div className="flex flex-col items-center mb-12">
+          <h1 className="text-4xl font-bold italic text-green-500 mb-2">
+            Shareable Todo
+          </h1>
+          <p className="text-slate-400">Organize your tasks with ease</p>
         </div>
-        <div className="flex flex-col m-4 grow items-center">
-          <div>{LoginWith({ providor: AuthType.Discord })}</div>
+        <div className="flex flex-col items-center px-8">
+          <div className="w-full max-w-xs">
+            {LoginWith({ providor: AuthType.Discord })}
+          </div>
         </div>
       </div>
-      <div className="grow max-md:hidden"></div>
+      <div className="grow max-md:hidden bg-[url('/method-img/login-bg.jpg')] bg-cover bg-center opacity-40"></div>
     </div>
   );
 }

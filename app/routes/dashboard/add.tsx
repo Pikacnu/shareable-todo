@@ -181,7 +181,7 @@ export default function Add() {
           </div>
         </div>
       )}
-      <div className="flex flex-col p-8 bg-slate-700 justify-between h-full lg:overflow-hidden overflow-visible md:rounded-lg">
+      <div className="flex flex-col p-8 bg-white/5 outline-1 outline-gray-400/40 justify-between h-full lg:overflow-hidden overflow-visible md:rounded-lg">
         <div className="flex flex-col grow relative max-w-full ">
           <div className="flex flex-col *:my-2 lg:h-[50%]">
             <input
@@ -360,9 +360,9 @@ export default function Add() {
             </div>
           </div>
         </div>
-        <div className="text-black flex flex-row rounded-lg justify-end gap-2">
+        <div className="text-white flex flex-row rounded-lg justify-end gap-2">
           <button
-            className="bg-gray-800 hover:bg-gray-600 text-white font-bold p-2 rounded outline-1 outline-gray-400/40"
+            className="bg-white/10 hover:bg-white/20 text-white font-bold p-2 rounded outline outline-1 outline-gray-400/40 transition-colors"
             onClick={() => {
               submit(
                 title,
@@ -380,7 +380,7 @@ export default function Add() {
             <CalendarPlus2 />
           </button>
           <button
-            className="bg-gray-800 hover:bg-gray-600 text-white font-bold p-2 rounded outline-1 outline-gray-400/40"
+            className="bg-green-600 hover:bg-green-500 text-white font-bold p-2 rounded outline outline-1 outline-gray-400/40 transition-colors"
             onClick={() =>
               submit(
                 title,
@@ -399,8 +399,8 @@ export default function Add() {
           </button>
         </div>
       </div>
-      <div className="hidden lg:block w-full lg:w-2/5 bg-gray-100 dark:bg-slate-700 rounded-lg p-4 h-full overflow-auto">
-        <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+      <div className="hidden lg:block w-full lg:w-2/5 bg-white/5 outline outline-1 outline-gray-400/40 rounded-lg p-4 h-full overflow-auto">
+        <h2 className="text-lg font-semibold mb-3 text-white">
           Preview — Lists
         </h2>
         <div className="space-y-4">
@@ -424,21 +424,21 @@ export default function Add() {
             if (Todo.length === 0) return null;
             return (
               <div key={todoList.id} className="m-4 overflow-clip">
-                <div className="text-xl font-semibold underline-offset-4 mb-2 text-gray-900 dark:text-white">
+                <div className="text-xl font-semibold underline-offset-4 mb-2 text-green-500">
                   {todoList.title}
                 </div>
                 <div className="flex flex-col gap-2">
                   {Todo.map((todo) => (
                     <div
                       key={`todo-${todo.id}`}
-                      className={`bg-white dark:bg-gray-700 rounded shadow p-3`}
+                      className={`bg-white/5 outline outline-1 outline-gray-400/40 rounded shadow p-3`}
                     >
                       <div className=" shrink grow">
-                        <p className="text-xl font-bold text-gray-900 dark:text-white truncate">
+                        <p className="text-xl font-bold text-white truncate">
                           {todo.title}
                         </p>
                         {todo.description && (
-                          <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                          <p className="text-sm text-slate-400 truncate">
                             {todo.description}
                           </p>
                         )}

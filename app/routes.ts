@@ -18,6 +18,7 @@ export default [
     route('add', './routes/dashboard/add.tsx'),
     //route('ai', './routes/dashboard/ai.tsx'),
     route('todolist', './routes/dashboard/todolist.tsx'),
+    route('user-guide', './routes/dashboard/userGuide.tsx'),
   ]),
 
   // API routes

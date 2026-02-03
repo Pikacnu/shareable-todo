@@ -70,31 +70,31 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="h-full text-black flex flex-col max-lg:grow max-lg:w-full w-1/3">
+      <div className="h-full text-white flex flex-col max-lg:grow max-lg:w-full w-1/3">
         {/* All Todo Lists */}
-        <div className="bg-stone-400 grow overflow-y-auto lg:rounded-lg">
+        <div className="bg-white/5 outline outline-1 outline-gray-400/40 grow overflow-y-auto lg:rounded-lg">
           {todolists.map((todoList) => {
             if (todoList.Todo.length === 0) return null;
             return (
               <div key={todoList.id} className="m-4 overflow-clip">
                 <Link
                   to={`/dashboard/todolist?id=${todoList.id}`}
-                  className="text-xl font-semibold underline-offset-4 underline mb-2"
+                  className="text-xl font-semibold underline-offset-4 underline mb-2 text-green-500"
                 >
                   {todoList.title}
                 </Link>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 mt-2">
                   {todoList.Todo.map((todo) => (
                     <div
                       key={`todo-${todo.id}`}
-                      className="flex flex-row bg-gray-400/40 *:p-2 items-center relative rounded-lg border-4 border-gray-600"
+                      className="flex flex-row bg-white/5 *:p-2 items-center relative rounded-lg outline outline-1 outline-gray-400/40"
                     >
                       <div className=" shrink grow">
                         <p className=" ml-2 text-ellipsis w-full overflow-hidden whitespace-nowrap max-w-[30vw] text-xl font-bold ">
                           {todo.title}
                         </p>
                         {todo.description && (
-                          <p className="ml-2 max-w-[30vw] text-ellipsis w-full overflow-hidden whitespace-nowrap text-sm ">
+                          <p className="ml-2 max-w-[30vw] text-ellipsis w-full overflow-hidden whitespace-nowrap text-sm text-slate-400">
                             {todo.description}
                           </p>
                         )}
