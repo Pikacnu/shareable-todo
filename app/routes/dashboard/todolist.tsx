@@ -71,12 +71,12 @@ export default function Todolist() {
             : undefined
         }
       />
-      <div className="flex m-4 justify-between items-center flex-col sticky bottom-0 bg-white/10 rounded-xl w-11/12 lg:w-2/3">
+      <div className="flex m-4 max-md:mb-0 justify-between items-center flex-col sticky bottom-0 bg-white/10 md:rounded-xl w-11/12 md:w-2/3">
         <h3 className=" text-xl font-bold">Create New Todo List</h3>
         <div className="flex flex-row grow gap-4 m-4 w-full p-2">
-          <div className="flex flex-col bg-white/10 *:p-2 grow text-sm lg:text-xl *:grow gap-4 *:m-2 rounded-xl *:rounded-xl">
-            <input type="text" placeholder="title" ref={title} />
-            <input type="text" placeholder="description" ref={description} />
+          <div className="flex flex-col bg-white/10 *:p-3 grow text-sm lg:text-xl *:grow gap-4 rounded-xl *:rounded-xl *:text-lg">
+            <input type="text" placeholder="Title" ref={title} />
+            <input type="text" placeholder="Description" ref={description} />
           </div>
           <div className="flex items-center">
             <button

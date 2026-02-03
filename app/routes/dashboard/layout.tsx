@@ -17,11 +17,11 @@ export const loader = ({ request }: LoaderFunctionArgs) => {
 
 export default function Dashboard() {
   return (
-    <div className="flex flex-col md:flex-row w-full h-screen items-center justify-around overflow-hidden">
-      <main className="flex md:grow lg:m-2 w-full h-full items-center justify-center">
+    <div className="flex flex-col md:flex-row w-full h-screen items-center justify-around overflow-hidden relative">
+      <main className="flex lg:grow lg:m-2 w-full h-full items-center justify-center">
         <Outlet />
       </main>
-      <nav className="m-4 p-4 right-0 fixed md:relative w-[calc(100%-2rem)] md:w-auto bottom-0 md:h-[90%] lg:h-[80%] bg-white rounded-3xl text-black flex flex-row md:flex-col justify-between text-sm md:text-xl lg:w-16">
+      <nav className="md:m-4 p-4 relative right-0 w-full bottom-0 md:h-[90%] lg:h-[80%] md:w-16 bg-white md:rounded-3xl text-black flex flex-row md:flex-col justify-between text-sm md:text-xl">
         <div
           className="flex flex-row md:flex-col items-center lg:*:mt-4 max-lg:[&>a>img]:w-6 md:[&>a>img]:w-8 [&>a>p]:hidden md:[&>a>p]:block *:flex *:flex-col *:items-center text-lg 
           [&>*:hover]:bg-black/20 *:transition-all *:duration-200 *:rounded-3xl *:p-1 *:ml-4 *:md:ml-0 *:md:mt-4"

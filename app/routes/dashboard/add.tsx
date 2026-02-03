@@ -149,8 +149,8 @@ export default function Add() {
   const { todolists, todolistdata } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex lg:flex-row flex-col w-full overflow-hidden overflow-y-auto lg:overflow-hidden max-md:m-2 h-[90vh] lg:h-[80vh] justify-between lg:*:w-1/2 *:m-2 max-w-[100vw] relative">
-      <div className="flex flex-col p-8 bg-slate-700 justify-between h-full lg:overflow-hidden overflow-visible rounded-lg">
+    <div className="flex lg:flex-row flex-col w-full overflow-hidden overflow-y-auto lg:overflow-hidden md:m-2 h-full md:h-[85vh] justify-between lg:*:w-1/2 md:*:m-2 max-w-[100vw] relative">
+      <div className="flex flex-col p-8 bg-slate-700 justify-between h-full lg:overflow-hidden overflow-visible md:rounded-lg">
         <div className="flex flex-col grow relative max-w-full ">
           <div className="flex flex-col *:my-2 lg:h-[50%]">
             <input
@@ -197,17 +197,10 @@ export default function Add() {
             </div>
             <div
               className={
-                'flex space-x-3 justify-center flex-wrap items-center w-full lg:w-auto gap-2 *:justify-between *:w-full outline-1 outline-gray-400/40 rounded-md bg-white/5 relative overflow-hidden h-full' +
+                'flex px-4 justify-center flex-wrap items-center w-full lg:w-auto gap-2 *:justify-between *:w-full outline-1 outline-gray-400/40 rounded-md bg-white/5 relative overflow-hidden h-full' +
                 (isToday ? ' select-none pointer-events-none' : '')
               }
             >
-              <div
-                className={`absolute w-full h-full z-10 ${
-                  isToday
-                    ? 'bg-gray-500/60'
-                    : 'bg-transparent select-none pointer-events-none'
-                }`}
-              ></div>
               <div className="flex flex-row justify-between ">
                 <label htmlFor="startDateTime">From</label>
                 <input

@@ -48,7 +48,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col lg:flex-row justify-between max-w-screen w-full h-screen lg:h-[80vh] items-center relative overflow-y-auto lg:overflow-hidden grow">
+    <div className="flex flex-col lg:flex-row justify-between max-w-screen w-full h-full lg:h-[80vh] items-center relative overflow-y-auto lg:overflow-hidden grow">
       <div className="lg:m-4 grow flex flex-col lg:h-full h-full *:min-h-[30vh] relative max-lg:w-full w-1/3">
         <div className="flex flex-col w-full relative h-full max-lg:min-h-[50vh] min-h-[30vh]">
           <div className="w-full h-full relative lg:text-xl text-xs max-lg:*:rounded-none">
