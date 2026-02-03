@@ -1,8 +1,9 @@
 import { getTodoLists, getUserDataByRequest } from '~/function/getUserData';
 import { LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useFetcher, redirect } from '@remix-run/react';
+import { useLoaderData, useFetcher, useNavigate, Link } from '@remix-run/react';
 import Calendar from '~/components/calendar';
 import { Todo } from '~/components/tododroplist';
+import { CircleDot, CircleDotDashed } from 'lucide-react';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userData = await getUserDataByRequest(request);
@@ -37,6 +38,7 @@ export default function Dashboard() {
     todoList.Todo.forEach((todo) => acc.push(todo));
     return acc;
   }, [] as Todo[]);
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col lg:flex-row justify-between max-w-screen w-full h-screen lg:h-[80vh] items-center relative overflow-y-auto lg:overflow-hidden flex-grow">
@@ -45,55 +47,19 @@ export default function Dashboard() {
           <div className="w-full h-full relative lg:text-xl text-xs max-lg:*:rounded-none">
             <Calendar
               todoListData={todoListData}
-              onDateClick={(date) => {
-                redirect(`/dashboard/add?date=${date.toISOString()}`);
+              isRangeSelection={true}
+              onSelectionFinished={(selection) => {
+                if ('startDate' in selection && 'endDate' in selection) {
+                  navigate(
+                    `/dashboard/add?startDate=${selection.startDate.toISOString()}&endDate=${selection.endDate.toISOString()}`,
+                  );
+                } else if (Array.isArray(selection)) {
+                  // Handle multiple selection dates if needed
+                } else {
+                  navigate(`/dashboard/add?date=${selection.toISOString()}`);
+                }
               }}
             />
-          </div>
-        </div>
-        <div className="flex flex-col lg:max-h-[30vh] h-full">
-          {/* Upcoming todos within 2 days */}
-          <div className="w-full h-full flex flex-col text-black overflow-y-auto *:m-4 lg:rounded-lg bg-stone-400 gap-2">
-            {todoListData.map((todo) => {
-              if (todo.finished) return null;
-              if (
-                new Date(todo.endTime || '').getTime() -
-                  2 * 24 * 60 * 60 * 1000 >
-                new Date().getTime()
-              )
-                return null;
-              return (
-                <div
-                  key={todo.id}
-                  className="flex flex-row bg-gray-400 *:p-2 items-center relative"
-                >
-                  <div className=" flex-shrink flex-grow">
-                    <p className=" ml-2 text-ellipsis w-full overflow-hidden whitespace-nowrap max-w-[30vw] text-xl font-bold ">
-                      {todo.title}
-                    </p>
-                    <p className="ml-2 max-w-[30vw] text-ellipsis w-full overflow-hidden whitespace-nowrap text-sm font-semibold">
-                      {todo.description}
-                    </p>
-                  </div>
-                  <div className="flex flex-row flex-shrink-0">
-                    <input
-                      type="checkbox"
-                      id={`todo-${todo.id}-finish`}
-                      checked={todo.finished}
-                      onChange={() =>
-                        handleFinishChange(todo.id, !todo.finished)
-                      }
-                    />
-                    <label
-                      htmlFor={`todo-${todo.id}-finish`}
-                      className="select-none"
-                    >
-                      Finished?
-                    </label>
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       </div>
@@ -104,12 +70,17 @@ export default function Dashboard() {
             if (todoList.Todo.length === 0) return null;
             return (
               <div key={todoList.id} className="m-4 overflow-clip">
-                <h2 className="text-xl font-semibold">{todoList.title}</h2>
+                <Link
+                  to={`/dashboard/todolist?id=${todoList.id}`}
+                  className="text-xl font-semibold underline-offset-4 underline mb-2"
+                >
+                  {todoList.title}
+                </Link>
                 <div className="flex flex-col gap-2">
                   {todoList.Todo.map((todo) => (
                     <div
                       key={`todo-${todo.id}`}
-                      className="flex flex-row bg-gray-400 *:p-2 items-center relative"
+                      className="flex flex-row bg-gray-400/40 *:p-2 items-center relative rounded-lg border-4 border-gray-600"
                     >
                       <div className=" flex-shrink flex-grow">
                         <p className=" ml-2 text-ellipsis w-full overflow-hidden whitespace-nowrap max-w-[30vw] text-xl font-bold ">
@@ -129,12 +100,17 @@ export default function Dashboard() {
                           onChange={() =>
                             handleFinishChange(todo.id, !todo.finished)
                           }
+                          className="peer hidden"
                         />
                         <label
                           htmlFor={`todo-${todo.id}-finish`}
-                          className="select-none"
+                          className={`ml-2 ${
+                            todo.finished
+                              ? 'text-green-600 bg-green-400/40'
+                              : 'text-red-600 bg-red-400/40'
+                          } peer-checked:text-green-600 select-none duration-200 transition-colors rounded-2xl p-1`}
                         >
-                          Finished?
+                          {todo.finished ? <CircleDot /> : <CircleDotDashed />}
                         </label>
                       </div>
                     </div>

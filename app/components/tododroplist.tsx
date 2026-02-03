@@ -48,9 +48,14 @@ export type TodoListWithListInfo = TodoList & {
 export function DropList({
   todoList,
   url,
+  overwriteOpenState,
 }: {
   todoList: TodoListWithListInfo[];
   url: string;
+  overwriteOpenState?: {
+    todoListID: number;
+    isOpen: boolean;
+  }[];
 }) {
   //const fetcher = useFetcher();
   const [todoOpenState, setTodoOpenState] = useState<
@@ -58,7 +63,19 @@ export function DropList({
       todoListID: number;
       isOpen: boolean;
     }[]
-  >(todoList.map((todoList) => ({ todoListID: todoList.id, isOpen: false })));
+  >(
+    todoList.map((todoList) => {
+      if (overwriteOpenState) {
+        const overwriteState = overwriteOpenState.find(
+          (state) => state.todoListID === todoList.id,
+        );
+        if (overwriteState) {
+          return { todoListID: todoList.id, isOpen: overwriteState.isOpen };
+        }
+      }
+      return { todoListID: todoList.id, isOpen: false };
+    }),
+  );
   const Fetcher = useFetcher();
   return (
     <div className="flex flex-col h-full justify-start lg:w-full text-xs md:text-lg lg:text-xl">

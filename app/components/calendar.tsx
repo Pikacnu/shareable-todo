@@ -15,6 +15,7 @@ export default function Calendar({
   setRangeSelection,
   isMultipleSelection = false,
   setMultipleSelection,
+  onSelectionFinished,
 }: {
   todoListData?: Todo[];
   onDateClick?: (date: Date) => void;
@@ -22,6 +23,12 @@ export default function Calendar({
   setRangeSelection?: (startDate: Date | null, endDate: Date | null) => void;
   isMultipleSelection?: boolean;
   setMultipleSelection?: (dates: Date[]) => void;
+  onSelectionFinished?: (
+    dates:
+      | Date
+      | Date[]
+      | { startDate: Date; endDate: Date; seledtedDates?: Date[] },
+  ) => void;
 }) {
   const [month, setMonth] = useState(new Date().getMonth());
 
@@ -30,6 +37,7 @@ export default function Calendar({
   const [multipleSelectionDates, setMultipleSelectionDates] = useState<Date[]>(
     [],
   );
+  const [isInSelectingState, setIsInSelectingState] = useState(false);
 
   const { weekDateInfo, currentMonth, currentYear } = useMemo(() => {
     const today = new Date();
@@ -78,6 +86,8 @@ export default function Calendar({
   const dateButtonHandler = useCallback(
     (dateInfo: Date) => {
       onDateClick && onDateClick(dateInfo);
+      if (!isInSelectingState || !(isRangeSelection || isMultipleSelection))
+        return onSelectionFinished && onSelectionFinished(dateInfo);
       if (isMultipleSelection) {
         const dateIndex = multipleSelectionDates.findIndex((d) => {
           return (
@@ -160,6 +170,8 @@ export default function Calendar({
       isMultipleSelection,
       multipleSelectionDates,
       setMultipleSelection,
+      onSelectionFinished,
+      isInSelectingState,
     ],
   );
 
@@ -176,9 +188,64 @@ export default function Calendar({
           <ChevronLeft />
         </button>
       </div>
-      <div className="flex grid-cols-subgrid col-span-5 items-center justify-center text-center bg-slate-50 font-semibold text-slate-800">
-        {yearDisplay}/{monthDisplay + 1}
-      </div>
+      <button
+        className={`flex grid-cols-subgrid col-span-5 items-center justify-center text-center bg-slate-50 font-semibold text-slate-800 gap-2 hover:bg-black/10 transition-colors duration-200 ${
+          isInSelectingState && 'bg-cyan-800/40'
+        }`}
+        onClick={() => {
+          if (!isRangeSelection && !isMultipleSelection) {
+            return;
+          }
+          setIsInSelectingState(!isInSelectingState);
+          if (isInSelectingState) {
+            if (
+              isMultipleSelection &&
+              multipleSelectionDates.length > 0 &&
+              !isRangeSelection
+            ) {
+              onSelectionFinished &&
+                onSelectionFinished(multipleSelectionDates);
+            }
+            if (
+              isRangeSelection &&
+              rangeStartDate &&
+              rangeEndDate &&
+              !isMultipleSelection
+            ) {
+              onSelectionFinished &&
+                onSelectionFinished({
+                  startDate: rangeStartDate!,
+                  endDate: rangeEndDate!,
+                });
+            }
+
+            if (
+              isRangeSelection &&
+              rangeStartDate &&
+              rangeEndDate &&
+              isMultipleSelection &&
+              multipleSelectionDates.length > 0
+            ) {
+              onSelectionFinished &&
+                onSelectionFinished({
+                  startDate: rangeStartDate!,
+                  endDate: rangeEndDate!,
+                  seledtedDates: multipleSelectionDates,
+                });
+            }
+
+            return (
+              setRangeSelection && setRangeSelection(null, null),
+              setMultipleSelection && setMultipleSelection([]),
+              onSelectionFinished && onSelectionFinished([])
+            );
+          }
+        }}
+      >
+        <span>{yearDisplay}</span>
+        <span>/</span>
+        <span>{monthDisplay + 1}</span>
+      </button>
       <div className="items-center justify-center flex bg-slate-50">
         <button
           onClick={() => setMonth((prev) => prev + 1)}

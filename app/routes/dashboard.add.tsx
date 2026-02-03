@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { useFetcher, LoaderFunctionArgs } from 'react-router-dom';
+import {
+  useFetcher,
+  LoaderFunctionArgs,
+  useSearchParams,
+} from 'react-router-dom';
 import { authenticator } from '~/services/auth.server';
 import { db } from '~/services/db.server';
 import { list, user } from 'db/schema';
@@ -53,6 +57,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 }
 
+const toTimeInputString = (date: Date) => {
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - offset * 60 * 1000);
+  return localDate.toISOString().slice(0, 16);
+};
+
 export default function Add() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -60,10 +70,26 @@ export default function Add() {
   const [selectedTodoLists, setselectedTodoLists] = useState<TodoListInfo[]>(
     [],
   );
-  const now = new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000;
-  const defaultDateString = new Date(now).toISOString().slice(0, 16);
-  const [startDatetime, setStartDatetime] = useState(defaultDateString);
-  const [endDatetime, setEndDatetime] = useState(defaultDateString);
+  const searchParams = useSearchParams()[0];
+
+  const [startDatetime, setStartDatetime] = useState(
+    toTimeInputString(
+      new Date(
+        searchParams.get('startDate') ||
+          searchParams.get('date') ||
+          new Date().toISOString(),
+      ),
+    ),
+  );
+  const [endDatetime, setEndDatetime] = useState(
+    toTimeInputString(
+      new Date(
+        searchParams.get('endDate') ||
+          searchParams.get('date') ||
+          new Date().toISOString(),
+      ),
+    ),
+  );
   const [loop, setLoop] = useState(false);
   const [loopDuration, setLoopDuration] = useState('daily');
   const addTodo = useFetcher();
@@ -72,8 +98,8 @@ export default function Add() {
     setDescription('');
     setIsToday(false);
     setselectedTodoLists([]);
-    setStartDatetime(defaultDateString);
-    setEndDatetime(defaultDateString);
+    setStartDatetime(toTimeInputString(new Date()));
+    setEndDatetime(toTimeInputString(new Date()));
     setLoop(false);
     setLoopDuration('daily');
   };
@@ -294,7 +320,7 @@ export default function Add() {
           </button>
         </div>
       </div>
-      <div className="flex-col lg:w-full overflow-visible lg:overflow-hidden relative lg:flex">
+      <div className="flex-col lg:w-full overflow-visible lg:overflow-hidden relative lg:flex max-xl:hidden">
         <h1 className="bg-gray-500 w-auto p-2">Preview - Lists</h1>
         <div className="h-full text-black bg-gray-500 m-4 lg:m-0">
           {todolistdata.map((todoList) => {

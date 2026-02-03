@@ -21,7 +21,7 @@ export default function Dashboard() {
       <main className="flex md:flex-grow lg:m-2 w-full">
         <Outlet />
       </main>
-      <nav className="m-4 p-4 right-0 fixed md:relative w-11/12 md:w-auto bottom-0 md:h-[90%] lg:h-[80%] bg-white rounded-3xl text-black flex flex-row md:flex-col justify-between text-sm md:text-xl lg:w-16">
+      <nav className="m-4 p-4 right-0 fixed md:relative w-[calc(100%-2rem)] md:w-auto bottom-0 md:h-[90%] lg:h-[80%] bg-white rounded-3xl text-black flex flex-row md:flex-col justify-between text-sm md:text-xl lg:w-16">
         <div
           className="flex flex-row md:flex-col items-center lg:*:mt-4 max-lg:[&>a>img]:w-6 md:[&>a>img]:w-8 [&>a>p]:hidden md:[&>a>p]:block *:flex *:flex-col *:items-center text-lg 
           [&>*:hover]:bg-black/20 *:transition-all *:duration-200 *:rounded-3xl *:p-1 *:ml-4 *:md:ml-0 *:md:mt-4"
@@ -32,7 +32,7 @@ export default function Dashboard() {
           <Link to={'/dashboard/add'}>
             <CirclePlus />
           </Link>
-          <Link to={'/dashboard/todoLists'}>
+          <Link to={'/dashboard/todolist'}>
             <List />
           </Link>
         </div>
