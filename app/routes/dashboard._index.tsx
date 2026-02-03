@@ -44,7 +44,6 @@ export default function Dashboard() {
         <div className="flex flex-col w-full relative h-full max-lg:min-h-[50vh] min-h-[30vh]">
           <div className="w-full h-full relative lg:text-xl text-xs max-lg:*:rounded-none">
             <Calendar
-              isRangeSelection={true}
               todoListData={todoListData}
               onDateClick={(date) => {
                 redirect(`/dashboard/add?date=${date.toISOString()}`);

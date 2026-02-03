@@ -13,16 +13,23 @@ export default function Calendar({
   onDateClick,
   isRangeSelection = false,
   setRangeSelection,
+  isMultipleSelection = false,
+  setMultipleSelection,
 }: {
   todoListData?: Todo[];
   onDateClick?: (date: Date) => void;
   isRangeSelection?: boolean;
   setRangeSelection?: (startDate: Date | null, endDate: Date | null) => void;
+  isMultipleSelection?: boolean;
+  setMultipleSelection?: (dates: Date[]) => void;
 }) {
   const [month, setMonth] = useState(new Date().getMonth());
 
   const [rangeStartDate, setRangeStartDate] = useState<Date | null>(null);
   const [rangeEndDate, setRangeEndDate] = useState<Date | null>(null);
+  const [multipleSelectionDates, setMultipleSelectionDates] = useState<Date[]>(
+    [],
+  );
 
   const { weekDateInfo, currentMonth, currentYear } = useMemo(() => {
     const today = new Date();
@@ -71,6 +78,24 @@ export default function Calendar({
   const dateButtonHandler = useCallback(
     (dateInfo: Date) => {
       onDateClick && onDateClick(dateInfo);
+      if (isMultipleSelection) {
+        const dateIndex = multipleSelectionDates.findIndex((d) => {
+          return (
+            d.getFullYear() === dateInfo.getFullYear() &&
+            d.getMonth() === dateInfo.getMonth() &&
+            d.getDate() === dateInfo.getDate()
+          );
+        });
+        if (dateIndex >= 0) {
+          const newSelectedDates = [...multipleSelectionDates];
+          newSelectedDates.splice(dateIndex, 1);
+          setMultipleSelectionDates(newSelectedDates);
+          return setMultipleSelection && setMultipleSelection(newSelectedDates);
+        }
+        const newSelectedDates = [...multipleSelectionDates, dateInfo];
+        setMultipleSelectionDates(newSelectedDates);
+        return setMultipleSelection && setMultipleSelection(newSelectedDates);
+      }
       if (!isRangeSelection) {
         return;
       }
@@ -132,6 +157,9 @@ export default function Calendar({
       rangeEndDate,
       rangeStartDate,
       setRangeSelection,
+      isMultipleSelection,
+      multipleSelectionDates,
+      setMultipleSelection,
     ],
   );
 
@@ -196,12 +224,21 @@ export default function Calendar({
           date.setMinutes(currentTime.getMinutes());
           date.setSeconds(currentTime.getSeconds());
           date.setMilliseconds(currentTime.getMilliseconds());
-          const isInRange =
-            rangeStartDate &&
-            rangeEndDate &&
-            currentBlockMidNightDate.getTime() >= rangeStartDate.getTime() &&
-            currentBlockMidNightDate.getTime() <=
-              rangeEndDate.getTime() + 1 * 24 * 60 * 60 * 1000;
+          const isHightlight =
+            (isRangeSelection &&
+              rangeStartDate &&
+              rangeEndDate &&
+              currentBlockMidNightDate.getTime() >= rangeStartDate.getTime() &&
+              currentBlockMidNightDate.getTime() <=
+                rangeEndDate.getTime() + 1 * 24 * 60 * 60 * 1000) ||
+            (isMultipleSelection &&
+              multipleSelectionDates.some((d) => {
+                return (
+                  d.getFullYear() === currentBlockMidNightDate.getFullYear() &&
+                  d.getMonth() === currentBlockMidNightDate.getMonth() &&
+                  d.getDate() === currentBlockMidNightDate.getDate()
+                );
+              }));
           if (dateInfo.today) {
             return (
               <button
@@ -231,7 +268,7 @@ export default function Calendar({
               className={`flex flex-col m-1 rounded-lg border border-transparent ${
                 isOutsideMonth ? 'text-slate-300' : 'text-slate-700'
               } ${hasEvents ? 'bg-amber-50' : 'bg-white'} ${
-                isInRange && 'bg-yellow-100'
+                isHightlight && 'bg-yellow-100'
               } hover:bg-slate-100 transition-colors`}
             >
               <p className="self-end text-base">
