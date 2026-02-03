@@ -57,17 +57,19 @@ const DELETE = async (request: Request) => {
     return new Response('Success', { status: 200 });
   }
   if (deletedData.length === 0) {
-    const shareIDs = (
+    const shareData = (
       await db
         .select()
         .from(list)
         .where(arrayOverlaps(list.shareWith, [userInfoFromDB.id]))
-    )[0].shareWith;
-    if (!shareIDs) return new Response('Failed', { status: 400 });
+    )[0];
+    if (!shareData || !shareData.shareWith)
+      return new Response('Failed', { status: 400 });
+
     const result = await db
       .update(list)
       .set({
-        shareWith: shareIDs.filter((i) => i !== userInfoFromDB.id),
+        shareWith: shareData.shareWith.filter((i) => i !== userInfoFromDB.id),
       })
       .returning({
         id: list.id,

@@ -1,3 +1,4 @@
+import { Save, SquarePen } from 'lucide-react';
 import { useState } from 'react';
 import { useFetcher } from 'react-router-dom';
 
@@ -20,21 +21,25 @@ export default function TodoListEdit({
   const [description, setDescription] = useState('');
   return (
     <div className={'flex justify-between ' + className}>
-      <div className={`flex max-lg:*:max-w-[20vw] ${!isEditing ? '*:bg-transparent' : ''}`}>
+      <div
+        className={`flex max-lg:*:max-w-[20vw] ${
+          !isEditing ? '*:bg-transparent' : ''
+        }`}
+      >
         <input
           type="text"
           disabled={!isEditing}
-          placeholder="Title"
+          placeholder="title"
           onChange={(e) => setTitle(e.target.value)}
           value={title}
-        ></input>
+        />
         <input
           type="text"
-          placeholder={isEditing ? 'Description' : ''}
+          placeholder={isEditing ? 'description' : ''}
           disabled={!isEditing}
           onChange={(e) => setDescription(e.target.value)}
           value={description}
-        ></input>
+        />
       </div>
       {isOwner === undefined || !isOwner ? null : (
         <button
@@ -55,7 +60,7 @@ export default function TodoListEdit({
             setIsEditing(!isEditing);
           }}
         >
-          {isEditing ? 'Save' : 'Edit'}
+          {isEditing ? <Save /> : <SquarePen />}
         </button>
       )}
     </div>

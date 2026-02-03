@@ -1,6 +1,6 @@
 import { getTodoLists, getUserDataByRequest } from '~/function/getUserData';
 import { LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useFetcher } from '@remix-run/react';
+import { useLoaderData, useFetcher, redirect } from '@remix-run/react';
 import Calendar from '~/components/calendar';
 import { Todo } from '~/components/tododroplist';
 
@@ -39,17 +39,22 @@ export default function Dashboard() {
   }, [] as Todo[]);
 
   return (
-    <div className="flex flex-col lg:flex-row justify-between max-w-screen w-full h-screen lg:h-[80vh] items-center relative overflow-y-auto lg:overflow-hidden">
-      <div className="lg:m-4 flex-grow flex flex-col lg:h-full h-full *:min-h-[30vh] relative [&>div>h1]:bg-gray-500 max-lg:w-[80vw] lg:[&>div>h1]:w-1/4 [&>div>h1]:m-2 [&>div>h1]:text-black [&>div>h1]:text-center [&>div>h1]:p-2 ">
-        <div className="flex flex-col w-full relative h-full max-md:min-h-[50vh] md:min-h-[30vh]">
-          <h1>Calendar</h1>
-          <div className="w-full h-full relative lg:text-xl text-xs md:text-xl">
-            <Calendar todoListData={todoListData} />
+    <div className="flex flex-col lg:flex-row justify-between max-w-screen w-full h-screen lg:h-[80vh] items-center relative overflow-y-auto lg:overflow-hidden flex-grow">
+      <div className="lg:m-4 flex-grow flex flex-col lg:h-full h-full *:min-h-[30vh] relative max-lg:w-full w-1/3">
+        <div className="flex flex-col w-full relative h-full max-lg:min-h-[50vh] min-h-[30vh]">
+          <div className="w-full h-full relative lg:text-xl text-xs max-lg:*:rounded-none">
+            <Calendar
+              isRangeSelection={true}
+              todoListData={todoListData}
+              onDateClick={(date) => {
+                redirect(`/dashboard/add?date=${date.toISOString()}`);
+              }}
+            />
           </div>
         </div>
         <div className="flex flex-col lg:max-h-[30vh] h-full">
-          <h1>{'Near End Todo'}</h1>
-          <div className="w-full h-full flex flex-col text-black overflow-y-auto *:m-4 rounded-lg bg-stone-400 gap-2">
+          {/* Upcoming todos within 2 days */}
+          <div className="w-full h-full flex flex-col text-black overflow-y-auto *:m-4 lg:rounded-lg bg-stone-400 gap-2">
             {todoListData.map((todo) => {
               if (todo.finished) return null;
               if (
@@ -64,18 +69,12 @@ export default function Dashboard() {
                   className="flex flex-row bg-gray-400 *:p-2 items-center relative"
                 >
                   <div className=" flex-shrink flex-grow">
-                    <div className="flex flex-col">
-                      <p>Title : </p>
-                      <p className=" ml-2 text-ellipsis w-full overflow-hidden whitespace-nowrap max-w-[30vw]">
-                        {todo.title}
-                      </p>
-                    </div>
-                    <div className="flex flex-col">
-                      <p>Description : </p>
-                      <p className="ml-2 max-w-[30vw] text-ellipsis w-full overflow-hidden whitespace-nowrap">
-                        {todo.description}
-                      </p>
-                    </div>
+                    <p className=" ml-2 text-ellipsis w-full overflow-hidden whitespace-nowrap max-w-[30vw] text-xl font-bold ">
+                      {todo.title}
+                    </p>
+                    <p className="ml-2 max-w-[30vw] text-ellipsis w-full overflow-hidden whitespace-nowrap text-sm font-semibold">
+                      {todo.description}
+                    </p>
                   </div>
                   <div className="flex flex-row flex-shrink-0">
                     <input
@@ -99,14 +98,14 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <div className=" m-4 h-full w-[80vw] lg:w-[40vw] text-black flex flex-col">
-        <h1 className="bg-slate-500 m-2 p-2 w-1/4 text-center">Todos</h1>
-        <div className="bg-stone-400 flex-grow overflow-y-auto rounded-lg">
+      <div className="h-full text-black flex flex-col max-lg:flex-grow max-lg:w-full w-1/3">
+        {/* All Todo Lists */}
+        <div className="bg-stone-400 flex-grow overflow-y-auto lg:rounded-lg">
           {todolists.map((todoList) => {
             if (todoList.Todo.length === 0) return null;
             return (
               <div key={todoList.id} className="m-4 overflow-clip">
-                <h2 className="text-xl">{todoList.title}</h2>
+                <h2 className="text-xl font-semibold">{todoList.title}</h2>
                 <div className="flex flex-col gap-2">
                   {todoList.Todo.map((todo) => (
                     <div
@@ -114,19 +113,13 @@ export default function Dashboard() {
                       className="flex flex-row bg-gray-400 *:p-2 items-center relative"
                     >
                       <div className=" flex-shrink flex-grow">
-                        <div className="flex flex-col">
-                          <p>Title : </p>
-                          <p className=" ml-2 text-ellipsis w-full overflow-hidden whitespace-nowrap max-w-[30vw]">
-                            {todo.title}
-                          </p>
-                        </div>
+                        <p className=" ml-2 text-ellipsis w-full overflow-hidden whitespace-nowrap max-w-[30vw] text-xl font-bold ">
+                          {todo.title}
+                        </p>
                         {todo.description && (
-                          <div className="flex flex-col">
-                            <p>Description : </p>
-                            <p className="ml-2 max-w-[30vw] text-ellipsis w-full overflow-hidden whitespace-nowrap">
-                              {todo.description}
-                            </p>
-                          </div>
+                          <p className="ml-2 max-w-[30vw] text-ellipsis w-full overflow-hidden whitespace-nowrap text-sm ">
+                            {todo.description}
+                          </p>
                         )}
                       </div>
                       <div className="flex flex-row flex-shrink-0">
@@ -153,9 +146,7 @@ export default function Dashboard() {
           })}
         </div>
       </div>
-      <div className="bg-black opacity-0 w-full hidden max-lg:block">
-        <p className="max-lg:h-16"></p>
-      </div>
+      <div className="bg-black opacity-0 w-full hidden max-lg:block max-lg:flex-grow"></div>
     </div>
   );
 }

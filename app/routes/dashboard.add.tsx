@@ -6,6 +6,7 @@ import { list, user } from 'db/schema';
 import { or, eq, arrayOverlaps } from 'drizzle-orm';
 import { useLoaderData } from '@remix-run/react';
 import { getTodoLists } from '~/function/getUserData';
+import { CalendarClock, CalendarPlus2, ClipboardPlus } from 'lucide-react';
 
 export const meta = () => {
   return [
@@ -114,8 +115,8 @@ export default function Add() {
   const { todolists, todolistdata } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex lg:flex-row flex-col w-full overflow-hidden overflow-y-auto lg:overflow-hidden m-4 h-[90vh] lg:h-[80vh] justify-between lg:*:w-1/2 *:m-4 max-w-[100vw] relative">
-      <div className="flex flex-col p-8 bg-slate-700 justify-between h-full lg:overflow-hidden overflow-visible">
+    <div className="flex lg:flex-row flex-col w-full overflow-hidden overflow-y-auto lg:overflow-hidden max-md:m-4 h-[90vh] lg:h-[80vh] justify-between lg:*:w-1/2 *:m-4 max-w-[100vw] relative">
+      <div className="flex flex-col p-8 bg-slate-700 justify-between h-full lg:overflow-hidden overflow-visible rounded-lg">
         <div className="flex flex-col flex-grow relative max-w-full ">
           <div className="flex flex-col *:m-2 lg:h-[50%]">
             <input
@@ -133,7 +134,7 @@ export default function Add() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-            <div className="flex *:m-2">
+            <div className="flex justify-between">
               <input
                 type="checkbox"
                 id="Today"
@@ -142,7 +143,7 @@ export default function Add() {
                 onChange={(e) => setIsToday(e.target.checked)}
               />
               <label htmlFor="Today" className=" select-none">
-                Only valid today
+                <CalendarClock />
               </label>
             </div>
             <div
@@ -254,9 +255,9 @@ export default function Add() {
             </div>
           </div>
         </div>
-        <div className="text-black flex flex-row *:m-2 rounded-lg p-2 justify-end">
+        <div className="text-black flex flex-row rounded-lg justify-end gap-2">
           <button
-            className="bg-gray-800 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+            className="bg-gray-800 hover:bg-gray-600 text-white font-bold p-2 rounded"
             onClick={() => {
               submit(
                 title,
@@ -271,10 +272,10 @@ export default function Add() {
               );
             }}
           >
-             Add a new task
+            <CalendarPlus2 />
           </button>
           <button
-            className="bg-gray-800 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+            className="bg-gray-800 hover:bg-gray-600 text-white font-bold p-2 rounded"
             onClick={() =>
               submit(
                 title,
@@ -289,7 +290,7 @@ export default function Add() {
               )
             }
           >
-            Add multiple tasks with these settings
+            <ClipboardPlus />
           </button>
         </div>
       </div>

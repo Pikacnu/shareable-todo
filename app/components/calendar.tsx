@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Todo } from './tododroplist';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -8,8 +8,20 @@ interface DateInfo {
   today?: boolean;
 }
 
-export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
+export default function Calendar({
+  todoListData,
+  onDateClick,
+  isRangeSelection = false,
+}: {
+  todoListData?: Todo[];
+  onDateClick?: (date: Date) => void;
+  isRangeSelection?: boolean;
+}) {
   const [month, setMonth] = useState(new Date().getMonth());
+
+  const [rangeStartDate, setRangeStartDate] = useState<Date | null>(null);
+  const [rangeEndDate, setRangeEndDate] = useState<Date | null>(null);
+
   const { weekDateInfo, currentMonth, currentYear } = useMemo(() => {
     const today = new Date();
     const firstDayOfTheMonth = new Date(today.getFullYear(), month, 1);
@@ -54,6 +66,63 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
     };
   }, [month]);
 
+  const dateButtonHandler = useCallback(
+    (dateInfo: Date) => {
+      onDateClick && onDateClick(dateInfo);
+      if (!isRangeSelection) {
+        return;
+      }
+      const date = new Date(dateInfo);
+      date.setHours(0, 0, 0, 0);
+      console.log(date);
+      const isEarlierThanStartDate =
+        rangeStartDate && date.getTime() < rangeStartDate.getTime();
+      const isLaterThanEndDate =
+        rangeEndDate && date.getTime() > rangeEndDate.getTime();
+      if (!rangeStartDate) {
+        return setRangeStartDate(date);
+      }
+      if (!rangeEndDate) {
+        if (isEarlierThanStartDate) {
+          setRangeEndDate(rangeStartDate);
+          setRangeStartDate(date);
+          return;
+        } else {
+          return setRangeEndDate(date);
+        }
+      }
+      if (isEarlierThanStartDate) {
+        return setRangeStartDate(date);
+      }
+      if (isLaterThanEndDate) {
+        return setRangeEndDate(date);
+      }
+      const deltaTimeToStart = Math.abs(
+        rangeStartDate!.getTime() - date.getTime(),
+      );
+      const deltaTimeToStartAsDays = Math.floor(
+        deltaTimeToStart / (1000 * 60 * 60 * 24),
+      );
+      const deltaTimeToEnd = Math.abs(rangeEndDate!.getTime() - date.getTime());
+      const deltaTimeToEndAsDays = Math.floor(
+        deltaTimeToEnd / (1000 * 60 * 60 * 24),
+      );
+      console.log({ deltaTimeToStartAsDays, deltaTimeToEndAsDays });
+      if (deltaTimeToStartAsDays === 0) {
+        return setRangeStartDate(null);
+      }
+      if (deltaTimeToEndAsDays === 0) {
+        return setRangeEndDate(null);
+      }
+      if (deltaTimeToStart > deltaTimeToEnd) {
+        return setRangeEndDate(date);
+      } else {
+        return setRangeStartDate(date);
+      }
+    },
+    [isRangeSelection, onDateClick, rangeEndDate, rangeStartDate],
+  );
+
   const monthDisplay = month < 0 ? 12 + (month % 12) : month % 12;
   const yearDisplay = new Date().getFullYear() + Math.floor(month / 12);
 
@@ -83,17 +152,20 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
           const DuringThisDate = todoListData?.filter((todo) => {
             const startDate = new Date((todo?.startTime || '')?.slice(0, 10));
             const endDate = new Date((todo?.endTime || '')?.slice(0, 10));
-            const now = new Date(
+            const currentBlockDate = new Date(
               `${currentYear}-${(currentMonth + 1)
                 .toString()
                 .padStart(2, '0')}-${dateInfo.day.toString().padStart(2, '0')}`,
             );
-            if (todo.isToday && startDate.getTime() === now.getTime()) {
+            if (
+              todo.isToday &&
+              startDate.getTime() === currentBlockDate.getTime()
+            ) {
               return true;
             }
             if (
-              startDate.getTime() <= now.getTime() &&
-              endDate.getTime() >= now.getTime()
+              startDate.getTime() <= currentBlockDate.getTime() &&
+              endDate.getTime() >= currentBlockDate.getTime()
             ) {
               return true;
             }
@@ -102,37 +174,67 @@ export default function Calendar({ todoListData }: { todoListData?: Todo[] }) {
           const countsOfEventOnThisDate = DuringThisDate?.length || 0;
           const isOutsideMonth = dateInfo.monthDelta !== 0;
           const hasEvents = countsOfEventOnThisDate > 0;
+          const date = new Date();
+          const currentTime = new Date();
+          date.setFullYear(currentYear);
+          date.setMonth(currentMonth + dateInfo.monthDelta);
+          date.setDate(dateInfo.day);
+          const MidNightDate = new Date(date);
+          date.setHours(currentTime.getHours());
+          date.setMinutes(currentTime.getMinutes());
+          date.setSeconds(currentTime.getSeconds());
+          date.setMilliseconds(currentTime.getMilliseconds());
+          const isInRange =
+            rangeStartDate &&
+            rangeEndDate &&
+            MidNightDate.getTime() >= rangeStartDate.getTime() &&
+            MidNightDate.getTime() <=
+              rangeEndDate.getTime() + 10 * 60 * 60 * 24;
           if (dateInfo.today) {
             return (
-              <div
+              <button
                 key={`${dateInfo.day}-${dateInfo.monthDelta}`}
-                className="bg-indigo-50 border border-indigo-200 rounded-lg flex flex-col m-1"
+                className={`bg-indigo-50 border border-indigo-200 rounded-lg flex flex-col m-1 ${
+                  isInRange ? 'bg-indigo-100' : ''
+                }`}
+                onClick={() => {
+                  dateButtonHandler(date);
+                }}
               >
-                <p className="self-end">
+                <p className="self-end text-lg">
                   <span className="p-2 text-blue-700 font-semibold">
                     {dateInfo.day}
                   </span>
                 </p>
-                <span className="text-sm text-blue-700">
+                <span className="text-sm text-blue-700 max-md:text-lg">
                   {hasEvents && `${countsOfEventOnThisDate} Events`}
                 </span>
-              </div>
+              </button>
             );
           }
           return (
-            <div
+            <button
+              onClick={() => {
+                dateButtonHandler(date);
+              }}
               key={`${dateInfo.day}-${dateInfo.monthDelta}`}
               className={`flex flex-col m-1 rounded-lg border border-transparent ${
                 isOutsideMonth ? 'text-slate-300' : 'text-slate-700'
-              } ${hasEvents ? 'bg-amber-50' : 'bg-white'}`}
+              } ${hasEvents ? 'bg-amber-50' : 'bg-white'} ${
+                isInRange ? 'bg-indigo-100' : ''
+              } hover:bg-slate-100 transition-colors`}
             >
-              <p className="self-end">
+              <p className="self-end text-base">
                 <span className="p-2">{dateInfo.day}</span>
               </p>
-              <span className={hasEvents ? 'text-amber-600' : 'text-slate-200'}>
+              <span
+                className={`${
+                  hasEvents ? 'text-amber-600' : 'text-slate-500'
+                } max-md:text-xs text-sm`}
+              >
                 {hasEvents && `${countsOfEventOnThisDate} Events`}
               </span>
-            </div>
+            </button>
           );
         });
       })}

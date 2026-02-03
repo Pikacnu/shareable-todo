@@ -7,6 +7,7 @@ import { db } from '~/services/db.server';
 import { useLoaderData, useFetcher } from '@remix-run/react';
 import { useRef } from 'react';
 import { getTodoLists } from '~/function/getUserData';
+import { FolderPlus } from 'lucide-react';
 
 export const meta = () => {
   return [
@@ -47,30 +48,34 @@ export default function TodoLists() {
   const title = useRef<HTMLInputElement>(null);
   const description = useRef<HTMLInputElement>(null);
   return (
-    <div className="w-full h-full  ">
+    <div className="w-full h-full flex flex-col items-center *:flex-grow *:w-full">
       <DropList todoList={todolists} url={url!} />
-      <div className="flex m-4 max-lg:max-w-[90vw]">
-        <div className="flex bg-slate-700 *:p-2 *:max-w-[20vw] flex-grow text-sm lg:text-xl">
-          <input type="text" placeholder="title" ref={title} />
-          <input type="text" placeholder="description" ref={description} />
+      <div className="flex m-4 justify-between items-center flex-grow flex-col w-full">
+        <h3 className=" text-xl font-bold">Create New Todo List</h3>
+
+        <div className="flex flex-row flex-grow w-full gap-4">
+          <div className="flex flex-col bg-white/10 *:p-2 flex-grow text-sm lg:text-xl *:flex-grow gap-4 *:m-2 rounded-xl">
+            <input type="text" placeholder="title" ref={title} />
+            <input type="text" placeholder="description" ref={description} />
+          </div>
+          <button
+            className="p-2 bg-green-600 rounded-lg"
+            onClick={() => {
+              const formData = new FormData();
+              if (title.current?.value.trim().length === 0) {
+                return alert('title and description is required');
+              }
+              formData.append('title', title.current?.value || '');
+              formData.append('description', description.current?.value || '');
+              Fetcher.submit(formData, {
+                action: '/api/todolist',
+                method: 'POST',
+              });
+            }}
+          >
+            <FolderPlus />
+          </button>
         </div>
-        <button
-          className="p-2 w-32 bg-green-600"
-          onClick={() => {
-            const formData = new FormData();
-            if (title.current?.value.trim().length === 0) {
-              return alert('title and description is required');
-            }
-            formData.append('title', title.current?.value || '');
-            formData.append('description', description.current?.value || '');
-            Fetcher.submit(formData, {
-              action: '/api/todolist',
-              method: 'POST',
-            });
-          }}
-        >
-          add
-        </button>
       </div>
     </div>
   );

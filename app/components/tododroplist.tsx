@@ -1,6 +1,17 @@
 import { useFetcher } from '@remix-run/react';
 import { useState } from 'react';
 import TodoListEdit from './todolist';
+import {
+  CircleDot,
+  CircleDotDashed,
+  DoorOpen,
+  FolderClosed,
+  FolderOpen,
+  Forward,
+  Lock,
+  LockOpen,
+  Trash,
+} from 'lucide-react';
 
 export type TodoListInfo = {
   id: number;
@@ -58,16 +69,16 @@ export function DropList({
         return (
           <div
             key={todoList.id}
-            className="flex flex-col lg:justify-between m-4 bg-slate-700"
+            className="flex flex-col lg:justify-between m-2 bg-slate-700 rounded-xl shadow-md"
           >
-            <div className="flex flex-row justify-between items-center">
+            <div className="flex flex-row justify-between items-center max-lg:flex-col my-4 mx-2 relative">
               <TodoListEdit
-                className=" flex-grow flex *:ml-4 items-center"
+                className=" flex-grow flex max-lg:justify-between max-lg:text-lg *:ml-4 self-start max-lg:w-full max-lg:pr-2 max-lg:my-2"
                 id={todoList.id}
                 defaulttitle={todoList.title}
                 isOwner={todoList.isOwner}
               ></TodoListEdit>
-              <div className="*:p-2 *:rounded-3xl">
+              <div className="*:rounded-3xl *:p-2 self-end">
                 <button
                   onClick={() => {
                     setTodoOpenState((prev) => {
@@ -77,7 +88,7 @@ export function DropList({
                     });
                   }}
                 >
-                  {!isOpen ? 'Open' : 'Close'}
+                  {isOpen ? <FolderOpen /> : <FolderClosed />}
                 </button>
                 {todoList.shareStatus === ShareStatus.Public ? (
                   <button
@@ -99,7 +110,7 @@ export function DropList({
                       }
                     }}
                   >
-                    Share
+                    <Forward />
                   </button>
                 ) : (
                   ''
@@ -117,9 +128,11 @@ export function DropList({
                       });
                     }}
                   >
-                    {todoList.shareStatus === ShareStatus.Public
-                      ? 'Public'
-                      : 'Private'}
+                    {todoList.shareStatus === ShareStatus.Public ? (
+                      <Lock />
+                    ) : (
+                      <LockOpen />
+                    )}
                   </button>
                 ) : null}
 
@@ -134,18 +147,18 @@ export function DropList({
                     });
                   }}
                 >
-                  {todoList.isOwner ? 'Delete' : 'Leave'}
+                  {todoList.isOwner ? <Trash /> : <DoorOpen />}
                 </button>
               </div>
             </div>
             <div
               className={`flex flex-col ${
                 isOpen ? 'flex' : 'hidden'
-              } bg-slate-500 lg:m-4`}
+              } bg-slate-500 lg:m-4 max-lg:rounded-b-xl p-2 gap-2`}
               hidden={!isOpen}
             >
               {todoList.Todo.length === 0 ? (
-                <div className="text-xl text-center">Nothing Here</div>
+                <div className="text-xl text-center my-4">Nothing Here</div>
               ) : (
                 todoList.Todo.map((todo) => {
                   return (
@@ -154,9 +167,9 @@ export function DropList({
                       className="flex flex-row justify-between items-center relative"
                     >
                       <div className="flex flex-row justify-around *:m-2 items-center overflow-hidden *:overflow-clip max-lg:*:max-w-36">
-                        <h1 className="bg-gray-700 p-2">{todo.title}</h1>
-                        <p className="bg-gray-700 p-2">{todo.description}</p>
-                        <p>
+                        <h1 className="font-semibold text-lg">{todo.title}</h1>
+                        <p className="text-sm">{todo.description}</p>
+                        <p className=" text-sm text-gray-200 underline underline-offset-2">
                           {todo.isToday
                             ? (() => {
                                 const dDate =
@@ -173,7 +186,7 @@ export function DropList({
                             : todo.datetime.slice(0, 10)}
                         </p>
                       </div>
-                      <div className="flex flex-row m-2 *:ml-4">
+                      <div className="flex flex-row m-2 *:ml-4 self-start max-md:self-center">
                         <button
                           className={` select-none ${
                             todo.finished ? ' bg-green-500' : 'bg-red-500'
@@ -191,7 +204,7 @@ export function DropList({
                             });
                           }}
                         >
-                          {todo.finished ? 'Finish' : 'working'}
+                          {todo.finished ? <CircleDot /> : <CircleDotDashed />}
                         </button>
                         {todoList.isOwner ? (
                           <button
@@ -205,7 +218,7 @@ export function DropList({
                               });
                             }}
                           >
-                            Delete
+                            <Trash />
                           </button>
                         ) : null}
                       </div>

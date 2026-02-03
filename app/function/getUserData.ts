@@ -61,7 +61,6 @@ export const getTodoLists = async (userID: number) => {
                   endTime: todoListData.event?.end_date?.toISOString(),
                   finished: todoListData.finishState?.finish || false,
                 },
-                // eslint-disable-next-line no-mixed-spaces-and-tabs
               ]
             : [],
           isOwner: todoListData.list.owner_id === userID,
