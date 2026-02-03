@@ -56,7 +56,7 @@ export default function Todolist() {
   const searchParams = useSearchParams()[0];
   const todolistId = searchParams.get('id');
   return (
-    <div className="w-full h-full flex flex-col items-center *:flex-grow *:w-full">
+    <div className="w-full h-full flex flex-col items-center *:grow *:w-full">
       <DropList
         todoList={todolists}
         url={url!}
@@ -73,8 +73,8 @@ export default function Todolist() {
       />
       <div className="flex m-4 justify-between items-center flex-col sticky bottom-0 bg-white/10 rounded-xl w-11/12 lg:w-2/3">
         <h3 className=" text-xl font-bold">Create New Todo List</h3>
-        <div className="flex flex-row flex-grow gap-4 m-4 w-full p-2">
-          <div className="flex flex-col bg-white/10 *:p-2 flex-grow text-sm lg:text-xl *:flex-grow gap-4 *:m-2 rounded-xl *:rounded-xl">
+        <div className="flex flex-row grow gap-4 m-4 w-full p-2">
+          <div className="flex flex-col bg-white/10 *:p-2 grow text-sm lg:text-xl *:grow gap-4 *:m-2 rounded-xl *:rounded-xl">
             <input type="text" placeholder="title" ref={title} />
             <input type="text" placeholder="description" ref={description} />
           </div>

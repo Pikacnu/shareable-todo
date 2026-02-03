@@ -189,7 +189,7 @@ export default function AI() {
   ]);
   return (
     <div className="flex flex-col w-full h-[80vh] justify-center items-center">
-      <div className="flex-grow bg-gray-500 w-[90vw] rounded-lg overflow-y-auto *:w-1/2 text-black flex flex-row ">
+      <div className="grow bg-gray-500 w-[90vw] rounded-lg overflow-y-auto *:w-1/2 text-black flex flex-row ">
         <div className="flex flex-col gap-4 overflow-y-auto">
           {history.map((data, i) => (
             <div className="flex flex-row gap-4" key={i}>

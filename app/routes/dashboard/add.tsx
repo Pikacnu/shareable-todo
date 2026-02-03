@@ -151,11 +151,11 @@ export default function Add() {
   return (
     <div className="flex lg:flex-row flex-col w-full overflow-hidden overflow-y-auto lg:overflow-hidden max-md:m-2 h-[90vh] lg:h-[80vh] justify-between lg:*:w-1/2 *:m-2 max-w-[100vw] relative">
       <div className="flex flex-col p-8 bg-slate-700 justify-between h-full lg:overflow-hidden overflow-visible rounded-lg">
-        <div className="flex flex-col flex-grow relative max-w-full ">
+        <div className="flex flex-col grow relative max-w-full ">
           <div className="flex flex-col *:my-2 lg:h-[50%]">
             <input
               type="text"
-              className="max-w-full overflow-hidden outline outline-2 rounded-md p-1 outline-gray-400/40 bg-transparent"
+              className="max-w-full overflow-hidden outline-2 rounded-md p-1 outline-gray-400/40 bg-transparent"
               placeholder="Title"
               value={title}
               minLength={3}
@@ -164,11 +164,11 @@ export default function Add() {
             />
             <textarea
               placeholder="Description"
-              className=" resize-none h-[10vh] lg:h-[60%] max-w-full overflow-hidden outline outline-2 rounded-md p-1 outline-gray-400/40 bg-transparent"
+              className=" resize-none h-[10vh] lg:h-[60%] max-w-full overflow-hidden outline-2 rounded-md p-1 outline-gray-400/40 bg-transparent"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-            <div className="flex flex-row space-x-4 items-center *:rounded-xl *:p-2 *:select-none *:transition-colors *:duration-100 *:outline *:outline-1 *:outline-gray-400/40">
+            <div className="flex flex-row space-x-4 items-center *:rounded-xl *:p-2 *:select-none *:transition-colors *:duration-100 *:outline-1 *:outline-gray-400/40">
               <input
                 type="checkbox"
                 id="Today"
@@ -197,7 +197,7 @@ export default function Add() {
             </div>
             <div
               className={
-                'flex space-x-3 justify-center flex-wrap items-center w-full lg:w-auto gap-2 *:justify-between *:w-full outline-1 outline outline-gray-400/40 rounded-md bg-white/5 relative overflow-hidden h-full' +
+                'flex space-x-3 justify-center flex-wrap items-center w-full lg:w-auto gap-2 *:justify-between *:w-full outline-1 outline-gray-400/40 rounded-md bg-white/5 relative overflow-hidden h-full' +
                 (isToday ? ' select-none pointer-events-none' : '')
               }
             >
@@ -214,7 +214,7 @@ export default function Add() {
                   disabled={isToday}
                   type="datetime-local"
                   name="startDateTime"
-                  className="outline outline-2 rounded-md outline-gray-400/40 bg-transparent"
+                  className="outline-2 rounded-md outline-gray-400/40 bg-transparent"
                   value={startDatetime}
                   onChange={(e) => setStartDatetime(e.target.value)}
                 />
@@ -225,7 +225,7 @@ export default function Add() {
                   disabled={isToday}
                   type="datetime-local"
                   name="endDateTime"
-                  className="outline outline-2 rounded-md outline-gray-400/40 bg-transparent"
+                  className="outline-2 rounded-md outline-gray-400/40 bg-transparent"
                   value={endDatetime}
                   onChange={(e) => setEndDatetime(e.target.value)}
                 />
@@ -244,7 +244,7 @@ export default function Add() {
               name="loopDuration"
               id="loopDuration"
               disabled={!loop}
-              className=" outline outline-1 outline-gray-400/40 bg-transparent rounded-md *:bg-black"
+              className=" outline-1 outline-gray-400/40 bg-transparent rounded-md *:bg-black"
               value={loopDuration}
               onChange={(e) => setLoopDuration(e.target.value)}
             >
@@ -258,7 +258,7 @@ export default function Add() {
             <label htmlFor="select-affectlist">Affect Lists</label>
             <select
               id="select-affectlist"
-              className=" outline outline-1 outline-gray-400/40 bg-transparent rounded-md *:bg-black"
+              className=" outline-1 outline-gray-400/40 bg-transparent rounded-md *:bg-black"
               onChange={(e) => {
                 e.preventDefault();
                 const selectIndex = Number(e.target.value);
@@ -288,7 +288,7 @@ export default function Add() {
                   </option>
                 ))}
             </select>
-            <div className="*:m-2 *:outline *:outline-1 *:outline-gray-400/40 *:rounded-md *:p-2 max-h-32 overflow-y-auto flex flex-col gap-2">
+            <div className="*:m-2 *:outline-1 *:outline-gray-400/40 *:rounded-md *:p-2 max-h-32 overflow-y-auto flex flex-col gap-2">
               {selectedTodoLists.map((list) => (
                 <div
                   key={list.id}
@@ -315,7 +315,7 @@ export default function Add() {
         </div>
         <div className="text-black flex flex-row rounded-lg justify-end gap-2">
           <button
-            className="bg-gray-800 hover:bg-gray-600 text-white font-bold p-2 rounded outline-1 outline-gray-400/40 outline"
+            className="bg-gray-800 hover:bg-gray-600 text-white font-bold p-2 rounded outline-1 outline-gray-400/40"
             onClick={() => {
               submit(
                 title,
@@ -333,7 +333,7 @@ export default function Add() {
             <CalendarPlus2 />
           </button>
           <button
-            className="bg-gray-800 hover:bg-gray-600 text-white font-bold p-2 rounded outline-1 outline-gray-400/40 outline"
+            className="bg-gray-800 hover:bg-gray-600 text-white font-bold p-2 rounded outline-1 outline-gray-400/40"
             onClick={() =>
               submit(
                 title,
@@ -386,7 +386,7 @@ export default function Add() {
                       key={`todo-${todo.id}`}
                       className={`bg-white dark:bg-gray-700 rounded shadow p-3`}
                     >
-                      <div className=" flex-shrink flex-grow">
+                      <div className=" shrink grow">
                         <p className="text-xl font-bold text-gray-900 dark:text-white truncate">
                           {todo.title}
                         </p>

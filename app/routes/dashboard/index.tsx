@@ -48,8 +48,8 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col lg:flex-row justify-between max-w-screen w-full h-screen lg:h-[80vh] items-center relative overflow-y-auto lg:overflow-hidden flex-grow">
-      <div className="lg:m-4 flex-grow flex flex-col lg:h-full h-full *:min-h-[30vh] relative max-lg:w-full w-1/3">
+    <div className="flex flex-col lg:flex-row justify-between max-w-screen w-full h-screen lg:h-[80vh] items-center relative overflow-y-auto lg:overflow-hidden grow">
+      <div className="lg:m-4 grow flex flex-col lg:h-full h-full *:min-h-[30vh] relative max-lg:w-full w-1/3">
         <div className="flex flex-col w-full relative h-full max-lg:min-h-[50vh] min-h-[30vh]">
           <div className="w-full h-full relative lg:text-xl text-xs max-lg:*:rounded-none">
             <Calendar
@@ -70,9 +70,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="h-full text-black flex flex-col max-lg:flex-grow max-lg:w-full w-1/3">
+      <div className="h-full text-black flex flex-col max-lg:grow max-lg:w-full w-1/3">
         {/* All Todo Lists */}
-        <div className="bg-stone-400 flex-grow overflow-y-auto lg:rounded-lg">
+        <div className="bg-stone-400 grow overflow-y-auto lg:rounded-lg">
           {todolists.map((todoList) => {
             if (todoList.Todo.length === 0) return null;
             return (
@@ -89,7 +89,7 @@ export default function Dashboard() {
                       key={`todo-${todo.id}`}
                       className="flex flex-row bg-gray-400/40 *:p-2 items-center relative rounded-lg border-4 border-gray-600"
                     >
-                      <div className=" flex-shrink flex-grow">
+                      <div className=" shrink grow">
                         <p className=" ml-2 text-ellipsis w-full overflow-hidden whitespace-nowrap max-w-[30vw] text-xl font-bold ">
                           {todo.title}
                         </p>
@@ -99,7 +99,7 @@ export default function Dashboard() {
                           </p>
                         )}
                       </div>
-                      <div className="flex flex-row flex-shrink-0">
+                      <div className="flex flex-row shrink-0">
                         <input
                           type="checkbox"
                           id={`todo-${todo.id}-finish`}
@@ -128,7 +128,7 @@ export default function Dashboard() {
           })}
         </div>
       </div>
-      <div className="bg-black opacity-0 w-full hidden max-lg:block max-lg:flex-grow"></div>
+      <div className="bg-black opacity-0 w-full hidden max-lg:block max-lg:grow"></div>
     </div>
   );
 }
