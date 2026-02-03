@@ -12,10 +12,12 @@ export default function Calendar({
   todoListData,
   onDateClick,
   isRangeSelection = false,
+  setRangeSelection,
 }: {
   todoListData?: Todo[];
   onDateClick?: (date: Date) => void;
   isRangeSelection?: boolean;
+  setRangeSelection?: (startDate: Date | null, endDate: Date | null) => void;
 }) {
   const [month, setMonth] = useState(new Date().getMonth());
 
@@ -74,28 +76,30 @@ export default function Calendar({
       }
       const date = new Date(dateInfo);
       date.setHours(0, 0, 0, 0);
-      console.log(date);
       const isEarlierThanStartDate =
         rangeStartDate && date.getTime() < rangeStartDate.getTime();
       const isLaterThanEndDate =
         rangeEndDate && date.getTime() > rangeEndDate.getTime();
       if (!rangeStartDate) {
-        return setRangeStartDate(date);
+        setRangeStartDate(date);
+        return setRangeSelection && setRangeSelection(date, rangeEndDate);
       }
       if (!rangeEndDate) {
         if (isEarlierThanStartDate) {
           setRangeEndDate(rangeStartDate);
           setRangeStartDate(date);
-          return;
-        } else {
-          return setRangeEndDate(date);
+          return setRangeSelection && setRangeSelection(date, rangeEndDate);
         }
+        setRangeEndDate(date);
+        return setRangeSelection && setRangeSelection(date, rangeEndDate);
       }
       if (isEarlierThanStartDate) {
-        return setRangeStartDate(date);
+        setRangeStartDate(date);
+        return setRangeSelection && setRangeSelection(date, rangeEndDate);
       }
       if (isLaterThanEndDate) {
-        return setRangeEndDate(date);
+        setRangeEndDate(date);
+        return setRangeSelection && setRangeSelection(date, rangeEndDate);
       }
       const deltaTimeToStart = Math.abs(
         rangeStartDate!.getTime() - date.getTime(),
@@ -107,20 +111,28 @@ export default function Calendar({
       const deltaTimeToEndAsDays = Math.floor(
         deltaTimeToEnd / (1000 * 60 * 60 * 24),
       );
-      console.log({ deltaTimeToStartAsDays, deltaTimeToEndAsDays });
       if (deltaTimeToStartAsDays === 0) {
-        return setRangeStartDate(null);
+        setRangeStartDate(null);
+        return setRangeSelection && setRangeSelection(date, rangeEndDate);
       }
       if (deltaTimeToEndAsDays === 0) {
-        return setRangeEndDate(null);
+        setRangeEndDate(null);
+        return setRangeSelection && setRangeSelection(date, rangeEndDate);
       }
       if (deltaTimeToStart > deltaTimeToEnd) {
-        return setRangeEndDate(date);
-      } else {
-        return setRangeStartDate(date);
+        setRangeEndDate(date);
+        return setRangeSelection && setRangeSelection(date, rangeEndDate);
       }
+      setRangeStartDate(date);
+      return setRangeSelection && setRangeSelection(date, rangeEndDate);
     },
-    [isRangeSelection, onDateClick, rangeEndDate, rangeStartDate],
+    [
+      isRangeSelection,
+      onDateClick,
+      rangeEndDate,
+      rangeStartDate,
+      setRangeSelection,
+    ],
   );
 
   const monthDisplay = month < 0 ? 12 + (month % 12) : month % 12;
@@ -179,7 +191,7 @@ export default function Calendar({
           date.setFullYear(currentYear);
           date.setMonth(currentMonth + dateInfo.monthDelta);
           date.setDate(dateInfo.day);
-          const MidNightDate = new Date(date);
+          const currentBlockMidNightDate = new Date(date);
           date.setHours(currentTime.getHours());
           date.setMinutes(currentTime.getMinutes());
           date.setSeconds(currentTime.getSeconds());
@@ -187,16 +199,14 @@ export default function Calendar({
           const isInRange =
             rangeStartDate &&
             rangeEndDate &&
-            MidNightDate.getTime() >= rangeStartDate.getTime() &&
-            MidNightDate.getTime() <=
-              rangeEndDate.getTime() + 10 * 60 * 60 * 24;
+            currentBlockMidNightDate.getTime() >= rangeStartDate.getTime() &&
+            currentBlockMidNightDate.getTime() <=
+              rangeEndDate.getTime() + 1 * 24 * 60 * 60 * 1000;
           if (dateInfo.today) {
             return (
               <button
                 key={`${dateInfo.day}-${dateInfo.monthDelta}`}
-                className={`bg-indigo-50 border border-indigo-200 rounded-lg flex flex-col m-1 ${
-                  isInRange ? 'bg-indigo-100' : ''
-                }`}
+                className={`bg-indigo-50 border border-indigo-200 rounded-lg flex flex-col m-1`}
                 onClick={() => {
                   dateButtonHandler(date);
                 }}
@@ -221,7 +231,7 @@ export default function Calendar({
               className={`flex flex-col m-1 rounded-lg border border-transparent ${
                 isOutsideMonth ? 'text-slate-300' : 'text-slate-700'
               } ${hasEvents ? 'bg-amber-50' : 'bg-white'} ${
-                isInRange ? 'bg-indigo-100' : ''
+                isInRange && 'bg-yellow-100'
               } hover:bg-slate-100 transition-colors`}
             >
               <p className="self-end text-base">
