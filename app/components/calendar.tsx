@@ -180,7 +180,7 @@ export default function Calendar({
   const yearDisplay = new Date().getFullYear() + Math.floor(month / 12);
 
   return (
-    <div className="w-full h-full grid grid-rows-7 grid-cols-7 text-slate-700 *:text-center relative *:select-none bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="w-full h-full grid grid-rows-7 grid-cols-7 text-slate-700 *:text-center relative *:select-none bg-white rounded-xl shadow-sm overflow-hidden">
       <div className="items-center justify-center flex bg-slate-50">
         <button
           onClick={() => setMonth((prev) => prev - 1)}
@@ -190,8 +190,8 @@ export default function Calendar({
         </button>
       </div>
       <button
-        className={`flex grid-cols-subgrid col-span-5 items-center justify-center text-center bg-slate-50 font-semibold text-slate-800 gap-2 hover:bg-black/10 transition-colors duration-200 ${
-          isInSelectingState && 'bg-cyan-800/40'
+        className={`flex grid-cols-subgrid col-span-5 items-center justify-center text-center font-semibold text-slate-800 gap-2 hover:bg-black/10 transition-colors duration-200 ${
+          isInSelectingState ? 'bg-cyan-800/80' : 'bg-slate-50'
         }`}
         onClick={() => {
           if (!isRangeSelection && !isMultipleSelection) {

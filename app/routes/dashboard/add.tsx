@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   useFetcher,
   LoaderFunctionArgs,
   useSearchParams,
   useLoaderData,
+  useBlocker,
 } from 'react-router';
 import { isAuthenticated } from '~/services/auth/auth.server';
 import { db } from '~/services/db.server';
@@ -79,6 +80,8 @@ export default function Add() {
     [],
   );
   const searchParams = useSearchParams()[0];
+  const [isDirty, setIsDirty] = useState(false);
+  const blocker = useBlocker(useCallback(() => isDirty, [isDirty]));
 
   const [startDatetime, setStartDatetime] = useState(
     toTimeInputString(
@@ -110,6 +113,7 @@ export default function Add() {
     setEndDatetime(toTimeInputString(new Date()));
     setLoop(false);
     setLoopDuration('daily');
+    setIsDirty(false);
   };
   const submit = (
     title: string,
@@ -145,11 +149,38 @@ export default function Add() {
     );
     addTodo.submit(formData, { method: 'post', action: '/api/todo' });
     if (clear) clearTempData();
+    else setIsDirty(false);
   };
   const { todolists, todolistdata } = useLoaderData<typeof loader>();
 
   return (
     <div className="flex lg:flex-row flex-col w-full overflow-hidden overflow-y-auto lg:overflow-hidden md:m-2 h-full md:h-[85vh] justify-between lg:*:w-1/2 md:*:m-2 max-w-[100vw] relative">
+      {blocker.state === 'blocked' && (
+        <div className="text-white bg-red-600 p-2 w-full absolute h-full z-50 top-0 left-0 flex flex-col items-center justify-center">
+          <p className="bg-red-600 text-center">
+            You have unsaved changes. Please save before leaving the page.
+          </p>
+          <div className=" flex flex-row w-full justify-center mt-4">
+            <button
+              className="m-2 p-2 bg-green-600 rounded-lg"
+              onClick={() => {
+                setIsDirty(false);
+                blocker.proceed();
+              }}
+            >
+              Leave without saving
+            </button>
+            <button
+              className="m-2 p-2 bg-gray-600 rounded-lg"
+              onClick={() => {
+                blocker.reset();
+              }}
+            >
+              Stay on this page
+            </button>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col p-8 bg-slate-700 justify-between h-full lg:overflow-hidden overflow-visible md:rounded-lg">
         <div className="flex flex-col grow relative max-w-full ">
           <div className="flex flex-col *:my-2 lg:h-[50%]">
@@ -160,13 +191,19 @@ export default function Add() {
               value={title}
               minLength={3}
               maxLength={50}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                setIsDirty(true);
+              }}
             />
             <textarea
               placeholder="Description"
               className=" resize-none h-[10vh] lg:h-[60%] max-w-full overflow-hidden outline-2 rounded-md p-1 outline-gray-400/40 bg-transparent"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                setIsDirty(true);
+              }}
             />
             <div className="flex flex-row space-x-4 items-center *:rounded-xl *:p-2 *:select-none *:transition-colors *:duration-100 *:outline-1 *:outline-gray-400/40">
               <input
@@ -175,7 +212,10 @@ export default function Add() {
                 name="Today"
                 className="hidden"
                 checked={isToday}
-                onChange={(e) => setIsToday(e.target.checked)}
+                onChange={(e) => {
+                  setIsToday(e.target.checked);
+                  setIsDirty(true);
+                }}
               />
               <input
                 type="checkbox"
@@ -183,7 +223,10 @@ export default function Add() {
                 id="loop"
                 className="hidden"
                 checked={loop}
-                onChange={() => setLoop((prev) => !prev)}
+                onChange={() => {
+                  setLoop((prev) => !prev);
+                  setIsDirty(true);
+                }}
               />
               <label
                 htmlFor="Today"
@@ -209,7 +252,10 @@ export default function Add() {
                   name="startDateTime"
                   className="outline-2 rounded-md outline-gray-400/40 bg-transparent"
                   value={startDatetime}
-                  onChange={(e) => setStartDatetime(e.target.value)}
+                  onChange={(e) => {
+                    setStartDatetime(e.target.value);
+                    setIsDirty(true);
+                  }}
                 />
               </div>
               <div className="flex justify-between">
@@ -220,7 +266,10 @@ export default function Add() {
                   name="endDateTime"
                   className="outline-2 rounded-md outline-gray-400/40 bg-transparent"
                   value={endDatetime}
-                  onChange={(e) => setEndDatetime(e.target.value)}
+                  onChange={(e) => {
+                    setEndDatetime(e.target.value);
+                    setIsDirty(true);
+                  }}
                 />
               </div>
             </div>
@@ -239,7 +288,10 @@ export default function Add() {
               disabled={!loop}
               className=" outline-1 outline-gray-400/40 bg-transparent rounded-md *:bg-black"
               value={loopDuration}
-              onChange={(e) => setLoopDuration(e.target.value)}
+              onChange={(e) => {
+                setLoopDuration(e.target.value);
+                setIsDirty(true);
+              }}
             >
               <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
@@ -264,6 +316,7 @@ export default function Add() {
                   return;
                 if (selectedList) {
                   setselectedTodoLists([...selectedTodoLists, selectedList]);
+                  setIsDirty(true);
                 }
               }}
             >
@@ -297,6 +350,7 @@ export default function Add() {
                       setselectedTodoLists(
                         selectedTodoLists.filter((item) => item.id !== list.id),
                       );
+                      setIsDirty(true);
                     }}
                   >
                     <Trash />
