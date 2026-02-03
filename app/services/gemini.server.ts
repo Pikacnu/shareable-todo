@@ -1,4 +1,9 @@
-import { GoogleGenerativeAI, SchemaType, Content } from '@google/generative-ai';
+import {
+  GoogleGenerativeAI,
+  SchemaType,
+  Content,
+  GenerationConfig,
+} from '@google/generative-ai';
 
 const apiKey = process.env.GEMINI_API_KEY!;
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -106,7 +111,7 @@ const model = genAI.getGenerativeModel({
     ]
   }*/
 
-const generationConfig = {
+const generationConfig: GenerationConfig = {
   temperature: 1,
   topP: 0.95,
   topK: 40,
@@ -140,10 +145,12 @@ const generationConfig = {
             },
             'repeat-duration': {
               type: SchemaType.STRING,
+              format: 'enum',
               enum: ['daily', 'weekly', 'monthly', 'yearly'],
             },
             action: {
               type: SchemaType.STRING,
+              format: 'enum',
               enum: ['add', 'change', 'remove', 'nochange'],
             },
             list_id: {
@@ -177,6 +184,7 @@ const generationConfig = {
             },
             action: {
               type: SchemaType.STRING,
+              format: 'enum',
               enum: ['add', 'change', 'remove', 'nochange'],
             },
             list_id: {

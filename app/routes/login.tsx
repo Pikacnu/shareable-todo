@@ -1,5 +1,5 @@
-import { LoaderFunctionArgs } from '@remix-run/node';
-import { Form } from '@remix-run/react';
+import { LoaderFunctionArgs , Form } from 'react-router';
+
 import { authenticator } from '~/services/auth.server';
 import { AuthType } from '~/services/auth.type';
 

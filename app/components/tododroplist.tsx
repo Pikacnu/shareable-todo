@@ -1,6 +1,6 @@
-import { useFetcher } from '@remix-run/react';
 import { useState } from 'react';
 import TodoListEdit from './todolist';
+import { useFetcher } from 'react-router-dom';
 import {
   CircleDot,
   CircleDotDashed,
@@ -76,7 +76,7 @@ export function DropList({
       return { todoListID: todoList.id, isOpen: false };
     }),
   );
-  const Fetcher = useFetcher();
+  const fetcher = useFetcher();
   return (
     <div className="flex flex-col h-full justify-start lg:w-full text-xs md:text-lg lg:text-xl">
       {todoList.map((todoList) => {
@@ -113,7 +113,7 @@ export function DropList({
                       if (!todoList.shareId) {
                         const formData = new FormData();
                         formData.append('list_id', todoList.id.toString());
-                        Fetcher.submit(formData, {
+                        fetcher.submit(formData, {
                           action: '/api/share',
                           method: 'POST',
                         });
@@ -139,7 +139,7 @@ export function DropList({
                       formData.append('id', todoList.id.toString());
                       formData.append('type', 'shareStatus');
                       formData.append('shareStatus', todoList.shareStatus);
-                      Fetcher.submit(formData, {
+                      fetcher.submit(formData, {
                         method: 'PUT',
                         action: '/api/todoList',
                       });
@@ -158,7 +158,7 @@ export function DropList({
                   onClick={() => {
                     const formData = new FormData();
                     formData.append('id', todoList.id.toString());
-                    Fetcher.submit(formData, {
+                    fetcher.submit(formData, {
                       method: 'DELETE',
                       action: '/api/todoList',
                     });
@@ -215,7 +215,7 @@ export function DropList({
                               'finished',
                               todo.finished ? 'false' : 'true',
                             );
-                            Fetcher.submit(formData, {
+                            fetcher.submit(formData, {
                               method: 'POST',
                               action: '/api/todo/finish',
                             });
@@ -229,7 +229,7 @@ export function DropList({
                             onClick={() => {
                               const formData = new FormData();
                               formData.append('id', todo.id.toString());
-                              Fetcher.submit(formData, {
+                              fetcher.submit(formData, {
                                 method: 'DELETE',
                                 action: '/api/todo',
                               });

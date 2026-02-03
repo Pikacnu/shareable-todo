@@ -6,7 +6,7 @@ import { db } from './db.server';
 import { user } from 'db/schema';
 import { eq } from 'drizzle-orm';
 
-export const authenticator = new Authenticator<UserData>(sessionStorage);
+export const authenticator = new Authenticator<UserData>();
 
 const callbackURL = (providor: AuthType) =>
   `${process.env.URL}/auth/${providor}/callback`;
