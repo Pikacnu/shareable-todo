@@ -18,7 +18,7 @@ export const loader = ({ request }: LoaderFunctionArgs) => {
 export default function Dashboard() {
   return (
     <div className="flex flex-col md:flex-row w-full h-screen items-center justify-around overflow-hidden">
-      <main className="flex md:flex-grow lg:m-2 w-full">
+      <main className="flex md:flex-grow lg:m-2 w-full h-full">
         <Outlet />
       </main>
       <nav className="m-4 p-4 right-0 fixed md:relative w-[calc(100%-2rem)] md:w-auto bottom-0 md:h-[90%] lg:h-[80%] bg-white rounded-3xl text-black flex flex-row md:flex-col justify-between text-sm md:text-xl lg:w-16">
