@@ -6,7 +6,7 @@
   "scripts": {
     "build": "bunx --bun react-router build",
     "dev": "bunx --bun react-router dev",
-    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "bunx --bun react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "generate": "drizzle-kit generate",
@@ -34,6 +34,9 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@eslint/compat": "^2.0.2",
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
     "@react-router/dev": "^7.13.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
@@ -47,6 +50,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^17.3.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",

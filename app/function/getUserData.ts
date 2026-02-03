@@ -7,7 +7,7 @@ import {
   ShareID,
   finishState,
 } from 'db/schema';
-import { eq, arrayOverlaps, or, and, arrayContains } from 'drizzle-orm';
+import { eq, or, and, arrayContains } from 'drizzle-orm';
 import { db } from '~/services/db.server';
 import { isAuthenticated } from '~/services/auth/auth.server';
 

@@ -85,9 +85,10 @@ export default function Calendar({
 
   const dateButtonHandler = useCallback(
     (dateInfo: Date) => {
-      onDateClick && onDateClick(dateInfo);
-      if (!isInSelectingState || !(isRangeSelection || isMultipleSelection))
-        return onSelectionFinished && onSelectionFinished(dateInfo);
+      onDateClick?.(dateInfo);
+      if (!isInSelectingState || !(isRangeSelection || isMultipleSelection)) {
+        return onSelectionFinished?.(dateInfo);
+      }
       if (isMultipleSelection) {
         const dateIndex = multipleSelectionDates.findIndex((d) => {
           return (
@@ -203,8 +204,7 @@ export default function Calendar({
               multipleSelectionDates.length > 0 &&
               !isRangeSelection
             ) {
-              onSelectionFinished &&
-                onSelectionFinished(multipleSelectionDates);
+              onSelectionFinished?.(multipleSelectionDates);
             }
             if (
               isRangeSelection &&
@@ -212,11 +212,10 @@ export default function Calendar({
               rangeEndDate &&
               !isMultipleSelection
             ) {
-              onSelectionFinished &&
-                onSelectionFinished({
-                  startDate: rangeStartDate!,
-                  endDate: rangeEndDate!,
-                });
+              onSelectionFinished?.({
+                startDate: rangeStartDate!,
+                endDate: rangeEndDate!,
+              });
             }
 
             if (
@@ -226,19 +225,16 @@ export default function Calendar({
               isMultipleSelection &&
               multipleSelectionDates.length > 0
             ) {
-              onSelectionFinished &&
-                onSelectionFinished({
-                  startDate: rangeStartDate!,
-                  endDate: rangeEndDate!,
-                  seledtedDates: multipleSelectionDates,
-                });
+              onSelectionFinished?.({
+                startDate: rangeStartDate!,
+                endDate: rangeEndDate!,
+                seledtedDates: multipleSelectionDates,
+              });
             }
 
-            return (
-              setRangeSelection && setRangeSelection(null, null),
-              setMultipleSelection && setMultipleSelection([]),
-              onSelectionFinished && onSelectionFinished([])
-            );
+            setRangeSelection?.(null, null);
+            setMultipleSelection?.([]);
+            return onSelectionFinished?.([]);
           }
         }}
       >

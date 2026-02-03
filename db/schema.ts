@@ -4,7 +4,6 @@ import {
   text,
   timestamp,
   boolean,
-  pgEnum,
   unique,
   integer,
   index,

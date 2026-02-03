@@ -1,10 +1,14 @@
-import { LoaderFunctionArgs, redirect , useFetcher, useLoaderData } from 'react-router';
+import {
+  LoaderFunctionArgs,
+  redirect,
+  useFetcher,
+  useLoaderData,
+} from 'react-router';
 import { chatSession } from 'db/schema';
 import { eq } from 'drizzle-orm';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getUserDataByRequest } from '~/function/getUserData';
 import { db } from '~/services/db.server';
-
 
 export const meta = () => {
   return [{ title: 'AI', description: 'AI page for testing AI' }];
@@ -108,15 +112,13 @@ export default function AI() {
   );
   const [pending, setPending] = useState(false);
   const fetcher = useFetcher();
-  const last = useMemo(() => {
-    let last = new Date().getTime();
-    return () => {
-      if (new Date().getTime() - last > 5000) {
-        last = new Date().getTime();
-        return true;
-      }
-      return false;
-    };
+  const lastTimeRef = useRef(new Date().getTime());
+  const last = useCallback(() => {
+    if (new Date().getTime() - lastTimeRef.current > 5000) {
+      lastTimeRef.current = new Date().getTime();
+      return true;
+    }
+    return false;
   }, []);
   const send = useCallback(async () => {
     if (last()) {
