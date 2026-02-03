@@ -25,6 +25,7 @@ export const meta = () => {
 export default function Dashboard() {
   const { todolists } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
+
   const handleFinishChange = async (todoId: number, finished: boolean) => {
     const formData = new FormData();
     formData.append('id', todoId.toString());
@@ -34,6 +35,7 @@ export default function Dashboard() {
       action: '/api/todo/finish',
     });
   };
+
   const todoListData = todolists.reduce((acc, todoList) => {
     todoList.Todo.forEach((todo) => acc.push(todo));
     return acc;

@@ -197,7 +197,7 @@ export default function Add() {
             </div>
             <div
               className={
-                'flex space-x-3 justify-center flex-wrap items-center w-full lg:w-auto gap-2 *:justify-between *:w-full outline-1 outline outline-gray-400/40 rounded-md bg-white/5 relative overflow-hidden' +
+                'flex space-x-3 justify-center flex-wrap items-center w-full lg:w-auto gap-2 *:justify-between *:w-full outline-1 outline outline-gray-400/40 rounded-md bg-white/5 relative overflow-hidden h-full' +
                 (isToday ? ' select-none pointer-events-none' : '')
               }
             >
@@ -275,7 +275,7 @@ export default function Add() {
               }}
             >
               <option value="none" id="option">
-                select todo list
+                Select to add todolist
               </option>
               {todolists
                 .filter(
@@ -352,9 +352,11 @@ export default function Add() {
           </button>
         </div>
       </div>
-      <div className="flex-col lg:w-full overflow-visible lg:overflow-hidden relative lg:flex max-xl:hidden">
-        <h1 className="bg-gray-500 w-auto p-2">Preview - Lists</h1>
-        <div className="h-full text-black bg-gray-500 m-4 lg:m-0">
+      <div className="hidden lg:block w-full lg:w-2/5 bg-gray-100 dark:bg-slate-700 rounded-lg p-4 h-full overflow-auto">
+        <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+          Preview — Lists
+        </h2>
+        <div className="space-y-4">
           {todolistdata.map((todoList) => {
             let Todo = todoList.Todo;
             if (selectedTodoLists.some((data) => data.id === todoList.id))
@@ -374,25 +376,29 @@ export default function Add() {
               ];
             if (Todo.length === 0) return null;
             return (
-              <div key={todoList.id} className="m-4">
-                <h2 className="text-xl">{todoList.title}</h2>
-                {Todo.map((todo) => (
-                  <div
-                    key={`todo-${todo.id}`}
-                    className={`flex flex-row ${
-                      todo?.preview ? 'bg-yellow-200' : 'bg-gray-200'
-                    } *:p-2 items-center overflow-hidden relative outline outline-2`}
-                  >
-                    <div className=" justify-between flex-grow overflow-hidden *:text-clip *:text-wrap ">
-                      <p>Title : {todo.title}</p>
-                      {todo.description && (
-                        <p className=" text-clip text-wrap whitespace-break-spaces">
-                          Description : {todo.description}
+              <div key={todoList.id} className="m-4 overflow-clip">
+                <div className="text-xl font-semibold underline-offset-4 mb-2 text-gray-900 dark:text-white">
+                  {todoList.title}
+                </div>
+                <div className="flex flex-col gap-2">
+                  {Todo.map((todo) => (
+                    <div
+                      key={`todo-${todo.id}`}
+                      className={`bg-white dark:bg-gray-700 rounded shadow p-3`}
+                    >
+                      <div className=" flex-shrink flex-grow">
+                        <p className="text-xl font-bold text-gray-900 dark:text-white truncate">
+                          {todo.title}
                         </p>
-                      )}
+                        {todo.description && (
+                          <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                            {todo.description}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             );
           })}
