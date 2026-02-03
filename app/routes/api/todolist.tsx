@@ -1,6 +1,6 @@
 import { ActionFunctionArgs } from 'react-router';
 import { user, list } from 'db/schema';
-import { authenticator } from '~/services/auth.server';
+import { isAuthenticated } from '~/services/auth/auth.server';
 import { eq, and, arrayOverlaps } from 'drizzle-orm';
 import { db } from '~/services/db.server';
 import { ShareStatus } from '~/components/tododroplist';
@@ -10,12 +10,12 @@ const POST = async (request: Request) => {
   const title = formData.get('title') as string;
   const desctiprion = formData.get('description') as string;
   if (!title) return new Response('Title is required', { status: 400 });
-  const userData = await authenticator.isAuthenticated(request);
+  const userData = await isAuthenticated(request);
   const userInfoFromDB = (
     await db
       .select()
       .from(user)
-      .where(eq(user.email, userData?.email || ''))
+      .where(eq(user.email, userData?.user?.email || ''))
   )[0];
   const insertedData = await db
     .insert(list)
@@ -39,12 +39,12 @@ const POST = async (request: Request) => {
 const DELETE = async (request: Request) => {
   const formData = await request.formData();
   const id = parseInt(formData.get('id') as string);
-  const userData = await authenticator.isAuthenticated(request);
+  const userData = await isAuthenticated(request);
   const userInfoFromDB = (
     await db
       .select()
       .from(user)
-      .where(eq(user.email, userData?.email || ''))
+      .where(eq(user.email, userData?.user?.email || ''))
   )[0];
   const deletedData = await db
     .delete(list)
@@ -89,12 +89,12 @@ const updateShareStatus = async (request: Request, formData: FormData) => {
     ShareStatus.Public
       ? ShareStatus.Private
       : ShareStatus.Public;
-  const userData = await authenticator.isAuthenticated(request);
+  const userData = await isAuthenticated(request);
   const userInfoFromDB = (
     await db
       .select()
       .from(user)
-      .where(eq(user.email, userData?.email || ''))
+      .where(eq(user.email, userData?.user?.email || ''))
   )[0];
   const updatedData = await db
     .update(list)
@@ -117,12 +117,12 @@ const updateInfo = async (request: Request, formData: FormData) => {
   const title = formData.get('title') as string;
   const description = formData.get('description') as string;
 
-  const userData = await authenticator.isAuthenticated(request);
+  const userData = await isAuthenticated(request);
   const userInfoFromDB = (
     await db
       .select()
       .from(user)
-      .where(eq(user.email, userData?.email || ''))
+      .where(eq(user.email, userData?.user?.email || ''))
   )[0];
   const updatedData = await db
     .update(list)

@@ -1,5 +1,5 @@
-import { LoaderFunctionArgs , Outlet, Link } from 'react-router';
-import { authenticator } from '~/services/auth.server';
+import { LoaderFunctionArgs, Outlet, Link } from 'react-router';
+import { isAuthenticated } from '~/services/auth/auth.server';
 
 import {
   LayoutDashboard,
@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 
 export const loader = ({ request }: LoaderFunctionArgs) => {
-  return authenticator.isAuthenticated(request, {
+  return isAuthenticated(request, {
     failureRedirect: '/login',
   });
 };

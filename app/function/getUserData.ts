@@ -7,16 +7,16 @@ import {
   ShareID,
   finishState,
 } from 'db/schema';
-import { eq, arrayOverlaps, or, and } from 'drizzle-orm';
+import { eq, arrayOverlaps, or, and, arrayContains } from 'drizzle-orm';
 import { db } from '~/services/db.server';
-import { authenticator } from '~/services/auth.server';
+import { isAuthenticated } from '~/services/auth/auth.server';
 
-export const getTodoLists = async (userID: number) => {
+export const getTodoLists = async (userID: string) => {
   const todoListsData = await db
     .select()
     .from(list)
     .where(
-      or(eq(list.owner_id, userID), arrayOverlaps(list.shareWith, [userID])),
+      or(eq(list.owner_id, userID), arrayContains(list.shareWith, [userID])),
     )
     .leftJoin(todoListLinkToEvent, eq(list.id, todoListLinkToEvent.list_id))
     .leftJoin(event, eq(todoListLinkToEvent.event_id, event.id))
@@ -87,6 +87,6 @@ export type UserData = Awaited<ReturnType<typeof getUserData>>;
 export const getUserDataByRequest = async (
   request: Request,
 ): Promise<UserData> => {
-  const userData = await authenticator.isAuthenticated(request);
-  return await getUserData(userData?.email || '');
+  const userData = await isAuthenticated(request);
+  return await getUserData(userData?.user?.email || '');
 };

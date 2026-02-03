@@ -1,6 +1,11 @@
 import { useState } from 'react';
-import { useFetcher, LoaderFunctionArgs, useSearchParams,useLoaderData } from 'react-router';
-import { authenticator } from '~/services/auth.server';
+import {
+  useFetcher,
+  LoaderFunctionArgs,
+  useSearchParams,
+  useLoaderData,
+} from 'react-router';
+import { isAuthenticated } from '~/services/auth/auth.server';
 import { db } from '~/services/db.server';
 import { list, user } from 'db/schema';
 import { or, eq, arrayOverlaps } from 'drizzle-orm';
@@ -32,12 +37,12 @@ interface TodoListInfo {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   try {
-    const userData = await authenticator.isAuthenticated(request);
+    const userData = await isAuthenticated(request);
     const userInfoFromDB = (
       await db
         .select()
         .from(user)
-        .where(eq(user.email, userData?.email || ''))
+        .where(eq(user.email, userData?.user?.email || ''))
     )[0];
     const todoLists: TodoListInfo[] = await db
       .select({

@@ -27,12 +27,11 @@ export default [
     route('todolist', './routes/api/todolist.tsx'),
     route('todo', './routes/api/todo/index.tsx'),
     route('todo/finish', './routes/api/todo/finish.tsx'),
+    route('auth/*', './routes/api/auth/index.ts'),
   ]),
 
   // Auth routes
   ...prefix('auth', [
-    route(':providor', './routes/auth/$providor/index.tsx'),
-    route(':providor/callback', './routes/auth/$providor/callback/index.tsx'),
     route('failure', './routes/auth/failure.tsx'),
     route('logout', './routes/auth/logout.tsx'),
   ]),

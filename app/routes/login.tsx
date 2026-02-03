@@ -1,29 +1,33 @@
-import { LoaderFunctionArgs , Form } from 'react-router';
-
-import { authenticator } from '~/services/auth.server';
-import { AuthType } from '~/services/auth.type';
+import { LoaderFunctionArgs } from 'react-router';
+import { isAuthenticated } from '~/services/auth/auth.server';
+import { authClient } from '~/services/auth/auth';
+import { AuthType } from '~/services/auth/auth.type';
 
 function LoginWith({ providor }: { providor: AuthType }) {
+  const handleLogin = () => {
+    authClient.signIn.social({
+      provider: providor,
+      callbackURL: '/dashboard',
+    });
+  };
+
   return (
-    <Form
-      method="POST"
-      action={`/auth/${providor}`}
-      className="flex bg-gray-800 bg-opacity-30 rounded-2xl p-2 m-2"
+    <button
+      onClick={handleLogin}
+      className="flex bg-gray-800 bg-opacity-30 rounded-2xl p-2 m-2 text-lg items-center *:m-2"
     >
-      <button type="submit" className="flex text-lg items-center *:m-2">
-        <img
-          src={`/icons/${providor}.svg`}
-          alt={`${providor} icon`}
-          className="max-w-8"
-        />
-        <p>Login with {providor}</p>
-      </button>
-    </Form>
+      <img
+        src={`/icons/${providor}.svg`}
+        alt={`${providor} icon`}
+        className="max-w-8"
+      />
+      <p>Login with {providor}</p>
+    </button>
   );
 }
 
 export function loader({ request }: LoaderFunctionArgs) {
-  return authenticator.isAuthenticated(request, {
+  return isAuthenticated(request, {
     successRedirect: '/dashboard',
   });
 }
@@ -35,11 +39,11 @@ export default function Login() {
         <div className="h-1/4 flex items-end justify-center">
           <h1 className="text-2xl text-center">Login</h1>
         </div>
-        <div className="flex flex-col m-4 flex-grow items-center">
+        <div className="flex flex-col m-4 grow items-center">
           <div>{LoginWith({ providor: AuthType.Discord })}</div>
         </div>
       </div>
-      <div className="flex-grow max-md:hidden"></div>
+      <div className="grow max-md:hidden"></div>
     </div>
   );
 }

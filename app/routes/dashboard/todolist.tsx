@@ -1,13 +1,19 @@
 import { DropList } from '~/components/tododroplist';
 import { user } from 'db/schema';
 import { eq } from 'drizzle-orm';
-import { LoaderFunctionArgs, redirect , useLoaderData, useFetcher, useSearchParams } from 'react-router';
-import { authenticator } from '~/services/auth.server';
+import {
+  LoaderFunctionArgs,
+  redirect,
+  useLoaderData,
+  useFetcher,
+  useSearchParams,
+} from 'react-router';
 import { db } from '~/services/db.server';
 
 import { useRef } from 'react';
 import { getTodoLists } from '~/function/getUserData';
 import { FolderPlus } from 'lucide-react';
+import { isAuthenticated } from '~/services/auth';
 
 export const meta = () => {
   return [
@@ -20,13 +26,13 @@ export const meta = () => {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   try {
-    const userData = await authenticator.isAuthenticated(request);
+    const userData = await isAuthenticated(request);
     if (!userData) return redirect('/login');
     const userInfoFromDB = (
       await db
         .select()
         .from(user)
-        .where(eq(user.email, userData?.email || ''))
+        .where(eq(user.email, userData?.user?.email || ''))
     )[0];
     const todoLists = await getTodoLists(userInfoFromDB.id);
     return {

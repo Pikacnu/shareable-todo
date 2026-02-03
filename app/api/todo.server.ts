@@ -1,6 +1,6 @@
 import { event, user, todoListLinkToEvent } from 'db/schema';
 import { eq } from 'drizzle-orm';
-import { authenticator } from '~/services/auth.server';
+import { isAuthenticated } from '~/services/auth/auth.server';
 import { db } from '~/services/db.server';
 
 enum LoopDuration {
@@ -80,11 +80,11 @@ export const POST = async (request: Request) => {
       }
     }
 
-    const userData = await authenticator.isAuthenticated(request);
+    const userData = await isAuthenticated(request);
     const userInfoFromDB = await db
       .select()
       .from(user)
-      .where(eq(user.email, userData?.email || ''));
+      .where(eq(user.email, userData?.user?.email || ''));
     if (!userInfoFromDB.length)
       return new Response('User not found', { status: 400 });
     const userID = userInfoFromDB[0].id;
@@ -125,11 +125,11 @@ export const DELETE = async (request: Request) => {
   try {
     const formData = await request.formData();
     const eventID = parseInt(formData.get('id') as string);
-    const userData = await authenticator.isAuthenticated(request);
+    const userData = await isAuthenticated(request);
     const userInfoFromDB = await db
       .select()
       .from(user)
-      .where(eq(user.email, userData?.email || ''));
+      .where(eq(user.email, userData?.user?.email || ''));
     if (!userInfoFromDB.length)
       return new Response('User not found', { status: 400 });
     const userID = userInfoFromDB[0].id;
