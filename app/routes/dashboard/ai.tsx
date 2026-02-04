@@ -16,6 +16,7 @@ export const meta = () => {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   return redirect('/dashboard');
+  // eslint-disable-next-line no-unreachable
   const userData = await getUserDataByRequest(request);
   if (!userData) {
     return redirect('/login');
@@ -60,12 +61,6 @@ enum ResponseType {
   Error = 'Error',
 }
 
-type Message = {
-  character: Character;
-  text: string;
-  type?: ResponseType;
-};
-
 enum ChangeType {
   Add = 'add',
   Remove = 'remove',
@@ -79,6 +74,12 @@ enum RepeatDuration {
   Monthly = 'Monthly',
   Yearly = 'Yearly',
 }
+
+type Message = {
+  character: Character;
+  text: string;
+  type?: ResponseType;
+};
 
 type TodoChange = {
   title: string;

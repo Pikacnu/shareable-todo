@@ -1,9 +1,9 @@
 export enum AuthType {
-	Discord = 'discord',
+  Discord = 'discord',
 }
 
 export type UserData = {
-	name: string;
-	email: string;
-	roles?: string[];
+  name: string;
+  email: string;
+  roles?: string[];
 };
