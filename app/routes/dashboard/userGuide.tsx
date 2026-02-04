@@ -1,12 +1,3 @@
-import {
-  LayoutDashboard,
-  CirclePlus,
-  List,
-  Share2,
-  Sparkles,
-  BookOpen,
-} from 'lucide-react';
-
 export const meta = () => {
   return [
     {
