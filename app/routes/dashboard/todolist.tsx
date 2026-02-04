@@ -11,7 +11,7 @@ import {
 } from 'react-router';
 import { db } from '~/services/db.server';
 
-import { ChangeEvent, useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { getTodoLists } from '~/function/getUserData';
 import { FolderPlus } from 'lucide-react';
 import { isAuthenticated } from '~/services/auth';
@@ -107,15 +107,16 @@ export default function Todolist() {
           className="flex flex-row grow gap-4 m-4 w-full p-2"
           method="POST"
           action="/api/todolist"
-          onChange={(e: ChangeEvent<HTMLFormElement>) => {
-            const form = e.currentTarget;
+          onChange={(e) => {
+            const form = e.currentTarget as HTMLFormElement;
+            const titleInput = form.title as unknown as HTMLInputElement;
+            const descriptionInput = form.description as HTMLInputElement;
             setIsDirty(
-              //@ts-ignore
-              form.title.value.trim().length > 0 ||
-                form.description.value.trim().length > 0,
+              titleInput.value.trim().length > 0 ||
+                descriptionInput.value.trim().length > 0,
             );
           }}
-          onSubmitCapture={(e) => {
+          onSubmitCapture={() => {
             setTimeout(() => {
               setIsDirty(false);
               formData.current?.reset();
