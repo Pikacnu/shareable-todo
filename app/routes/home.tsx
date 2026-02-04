@@ -14,7 +14,7 @@ export default function Index() {
   return (
     <div className="flex flex-col w-full h-full text-white overflow-y-auto">
       {/* Hero Banner */}
-      <div className="w-full min-h-[60vh] flex flex-col items-center justify-center p-8 gap-8 text-center bg-gradient-to-b from-white/5 to-transparent">
+      <div className="w-full min-h-[60vh] flex flex-col items-center justify-center p-8 gap-8 text-center bg-linear-to-b from-white/5 to-transparent">
         <div className="flex flex-col items-center gap-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
           <h1 className="text-5xl md:text-7xl font-bold text-green-500 drop-shadow-xl tracking-tight">
             Shareable Todo

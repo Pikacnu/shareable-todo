@@ -35,9 +35,9 @@ export function loader({ request }: LoaderFunctionArgs) {
 export default function Login() {
   return (
     <div className="flex flex-row w-full h-full overflow-hidden text-white">
-      <div className="flex flex-col w-full md:w-1/3 bg-slate-800/50 outline-1 outline-gray-400/20 backdrop-blur-md z-10 justify-center shadow-2xl">
+      <div className="flex flex-col w-full md:w-1/3 bg-slate-800/50 outline-1 outline-gray-400/20 backdrop-blur-md z-10 justify-center shadow-2xl min-w-md">
         <div className="flex flex-col items-center mb-12">
-          <h1 className="text-5xl font-bold italic text-green-500 mb-2 drop-shadow-lg">
+          <h1 className="text-5xl font-bold text-green-500 mb-2 drop-shadow-lg">
             Shareable Todo
           </h1>
           <p className="text-slate-300 text-lg">
@@ -50,12 +50,25 @@ export default function Login() {
             {/* Add more providers here if needed */}
           </div>
         </div>
+        <div className="flex flex-col items-center mt-8 px-8 w-full">
+          <p className="text-xs text-gray-400 mt-8 mb-4">
+            By logging in, you agree to our{' '}
+            <a href="/info" className="text-green-400 underline">
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a href="/info" className="text-green-400 underline">
+              Privacy Policy
+            </a>
+            .
+          </p>
+        </div>
       </div>
       <div className="grow max-md:hidden bg-linear-to-br from-slate-700 to-slate-900 opacity-80 flex items-center justify-center">
         <img
           src="/method-img/Share.svg"
           alt="Login Visual"
-          className="w-1/2 opacity-20"
+          className="w-1/2 opacity-40 min-w-fit"
         />
       </div>
     </div>
