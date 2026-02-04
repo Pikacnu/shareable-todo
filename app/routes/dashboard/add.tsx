@@ -75,13 +75,19 @@ const toTimeInputString = (date: Date) => {
 export default function Add() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [isToday, setIsToday] = useState(false);
+
   const [selectedTodoLists, setselectedTodoLists] = useState<TodoListInfo[]>(
     [],
   );
+
   const searchParams = useSearchParams()[0];
   const [isDirty, setIsDirty] = useState(false);
+
   const blocker = useBlocker(useCallback(() => isDirty, [isDirty]));
+
+  const [isToday, setIsToday] = useState(
+    searchParams.get('isToday') === 'true' ? true : false,
+  );
 
   const [startDatetime, setStartDatetime] = useState(
     toTimeInputString(
@@ -92,6 +98,7 @@ export default function Add() {
       ),
     ),
   );
+
   const [endDatetime, setEndDatetime] = useState(
     toTimeInputString(
       new Date(
@@ -101,9 +108,12 @@ export default function Add() {
       ),
     ),
   );
+
   const [loop, setLoop] = useState(false);
   const [loopDuration, setLoopDuration] = useState('daily');
+
   const addTodo = useFetcher();
+
   const clearTempData = () => {
     setTitle('');
     setDescription('');
@@ -115,6 +125,7 @@ export default function Add() {
     setLoopDuration('daily');
     setIsDirty(false);
   };
+
   const submit = (
     title: string,
     description: string,
@@ -244,6 +255,9 @@ export default function Add() {
                 (isToday ? ' select-none pointer-events-none' : '')
               }
             >
+              {isToday && (
+                <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10"></div>
+              )}
               <div className="flex flex-row justify-between ">
                 <label htmlFor="startDateTime">From</label>
                 <input
@@ -362,7 +376,7 @@ export default function Add() {
         </div>
         <div className="text-white flex flex-row rounded-lg justify-end gap-2">
           <button
-            className="bg-white/10 hover:bg-white/20 text-white font-bold p-2 rounded outline outline-1 outline-gray-400/40 transition-colors"
+            className="bg-white/10 hover:bg-white/20 text-white font-bold p-2 rounded outline-1 outline-gray-400/40 transition-colors"
             onClick={() => {
               submit(
                 title,
@@ -380,7 +394,7 @@ export default function Add() {
             <CalendarPlus2 />
           </button>
           <button
-            className="bg-green-600 hover:bg-green-500 text-white font-bold p-2 rounded outline outline-1 outline-gray-400/40 transition-colors"
+            className="bg-green-600 hover:bg-green-500 text-white font-bold p-2 rounded outline-1 outline-gray-400/40 transition-colors"
             onClick={() =>
               submit(
                 title,
@@ -399,7 +413,7 @@ export default function Add() {
           </button>
         </div>
       </div>
-      <div className="hidden lg:block w-full lg:w-2/5 bg-white/5 outline outline-1 outline-gray-400/40 rounded-lg p-4 h-full overflow-auto">
+      <div className="hidden lg:block w-full lg:w-2/5 bg-white/5 outline-1 outline-gray-400/40 rounded-lg p-4 h-full overflow-auto">
         <h2 className="text-lg font-semibold mb-3 text-white">
           Preview — Lists
         </h2>

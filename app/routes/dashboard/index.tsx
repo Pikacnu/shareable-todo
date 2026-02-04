@@ -63,7 +63,9 @@ export default function Dashboard() {
                 } else if (Array.isArray(selection)) {
                   // Handle multiple selection dates if needed
                 } else {
-                  navigate(`/dashboard/add?date=${selection.toISOString()}`);
+                  navigate(
+                    `/dashboard/add?date=${selection.toISOString()}&isToday=true`,
+                  );
                 }
               }}
             />
