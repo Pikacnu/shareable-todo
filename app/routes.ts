@@ -7,10 +7,12 @@ import {
 
 export default [
   // Root routes
-  index('./routes/home.tsx'),
-  route('info', './routes/info.tsx'),
+  route('/', './routes/layout.tsx', [
+    index('./routes/home.tsx'),
+    route('info', './routes/info.tsx'),
+  ]),
+
   route('login', './routes/login.tsx'),
-  route('logout', './routes/logout.tsx'),
 
   // Dashboard routes
   route('dashboard', './routes/dashboard/layout.tsx', [

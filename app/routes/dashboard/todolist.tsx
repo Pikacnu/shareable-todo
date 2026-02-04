@@ -14,7 +14,7 @@ import { db } from '~/services/db.server';
 import { useCallback, useRef, useState } from 'react';
 import { getTodoLists } from '~/function/getUserData';
 import { FolderPlus } from 'lucide-react';
-import { isAuthenticated } from '~/services/auth';
+import { isAuthenticated } from '~/services/auth/auth.server';
 
 export const meta = () => {
   return [

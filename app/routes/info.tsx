@@ -12,35 +12,21 @@ export const meta = () => {
 
 export default function Info() {
   return (
-    <div className="flex flex-col w-full h-full">
-      <div className="flex flex-row justify-around p-2 *:flex-grow *:text-center bg-gray-600 sticky top-0 z-10">
-        <div className="flex flex-row gap-4 *:p-2">
-          <Link to={'/'} className="text-white text-xl">
-            Home
-          </Link>
-          <Link to="/login" className="text-white text-xl">
-            Login
-          </Link>
-          <Link to="/" className="text-white text-xl">
-            Info
-          </Link>
-        </div>
-      </div>
-      <div className="h-full w-full">
-        <div className="flex justify-center">
-          <div className="bg-red-600 p-4 rounded flex items-center gap-4">
-            <strong className="text-3xl bg-white text-black p-2 rounded-full">
-              !
-            </strong>
-            <p>This page is still under construction</p>
-          </div>
-        </div>
-        <div className="items-center flex justify-center flex-col *:m-4">
-          <p>Contact me:</p>
-          <div className='*:p-2 *:bg-slate-700 *:rounded text-lg flex flex-row flex-wrap gap-4'>
-            <a href="mailto:pika@mail.pikacnu.com">Mail</a>
-            <div>
-              Discord : pikacnu
+    <div className="flex flex-col w-full h-full text-white items-center justify-center p-4">
+      <div className="max-w-2xl w-full flex flex-col gap-6">
+        <div className="bg-white/5 outline-1 outline-gray-400/40 p-6 rounded-xl flex flex-col gap-4 backdrop-blur-sm">
+          <h2 className="text-xl font-bold text-green-500">Contact</h2>
+          <div className="flex flex-wrap gap-4">
+            <a
+              href="mailto:pika@mail.pikacnu.com"
+              className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <span>📧</span>
+              <span>Mail</span>
+            </a>
+            <div className="px-4 py-2 bg-white/10 rounded-lg flex items-center gap-2 cursor-default">
+              <span>💬</span>
+              <span>Discord: pikacnu</span>
             </div>
           </div>
         </div>

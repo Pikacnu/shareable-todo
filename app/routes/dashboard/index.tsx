@@ -130,7 +130,6 @@ export default function Dashboard() {
           })}
         </div>
       </div>
-      <div className="bg-black opacity-0 w-full hidden max-lg:block max-lg:grow"></div>
     </div>
   );
 }

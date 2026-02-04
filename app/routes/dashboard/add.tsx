@@ -445,7 +445,7 @@ export default function Add() {
                   {Todo.map((todo) => (
                     <div
                       key={`todo-${todo.id}`}
-                      className={`bg-white/5 outline outline-1 outline-gray-400/40 rounded shadow p-3`}
+                      className={`bg-white/5 outline-1 outline-gray-400/40 rounded shadow p-3`}
                     >
                       <div className=" shrink grow">
                         <p className="text-xl font-bold text-white truncate">

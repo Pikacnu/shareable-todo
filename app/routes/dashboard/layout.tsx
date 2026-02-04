@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, Outlet, Link } from 'react-router';
+import { LoaderFunctionArgs, Outlet, Link, useNavigate } from 'react-router';
 import { isAuthenticated } from '~/services/auth/auth.server';
 
 import {
@@ -9,6 +9,7 @@ import {
   LogOut,
   BookOpen,
 } from 'lucide-react';
+import { authClient } from '~/services/auth';
 
 export const loader = ({ request }: LoaderFunctionArgs) => {
   return isAuthenticated(request, {
@@ -17,6 +18,7 @@ export const loader = ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col md:flex-row w-full h-screen items-center justify-around overflow-hidden relative text-white bg-slate-700">
       <main className="flex grow lg:m-2 w-full min-h-0 items-center justify-center overflow-hidden">
@@ -41,12 +43,20 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        <Link
-          to={'/logout'}
+        <button
+          onClick={() => {
+            authClient.signOut({
+              fetchOptions: {
+                onSuccess: () => {
+                  navigate('/login'); // redirect to login page
+                },
+              },
+            });
+          }}
           className=" hover:bg-white/20 transition-all duration-200 rounded-3xl p-1 hover:text-red-400"
         >
           <LogOut />
-        </Link>
+        </button>
       </nav>
     </div>
   );
