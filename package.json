@@ -7,7 +7,7 @@
     "build": "bunx --bun react-router build",
     "dev": "bunx --bun react-router dev",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "bunx --bun react-router-serve ./build/server/index.js",
+    "start": "bunx react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
