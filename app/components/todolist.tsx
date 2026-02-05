@@ -7,6 +7,12 @@ interface TodoListInfo {
   defaulttitle: string;
   className?: string;
   isOwner?: boolean;
+  onOptimisticUpdate?: (update: {
+    type: string;
+    id: number;
+    title?: string;
+    description?: string;
+  }) => void;
 }
 
 export default function TodoListEdit({
@@ -14,6 +20,7 @@ export default function TodoListEdit({
   defaulttitle,
   className,
   isOwner,
+  onOptimisticUpdate,
 }: TodoListInfo) {
   const Fetcher = useFetcher();
   const [isEditing, setIsEditing] = useState(false);
@@ -47,6 +54,12 @@ export default function TodoListEdit({
           onClick={() => {
             if (isEditing) {
               if (defaulttitle === title) return setIsEditing(false);
+              onOptimisticUpdate?.({
+                type: 'updateInfo',
+                id,
+                title,
+                description,
+              });
               const formData = new FormData();
               formData.append('id', id.toString());
               formData.append('title', title);

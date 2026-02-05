@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useOptimistic } from 'react';
 import TodoListEdit from './todolist';
 import { useFetcher } from 'react-router-dom';
 import {
@@ -77,23 +77,78 @@ export function DropList({
     }),
   );
   const fetcher = useFetcher();
+
+  // 樂觀更新 todoList
+  const [optimisticTodoList, updateOptimisticTodoList] = useOptimistic(
+    todoList,
+    (
+      state,
+      update: {
+        type: string;
+        id: number;
+        todoId?: number;
+        title?: string;
+        description?: string;
+      },
+    ) => {
+      if (update.type === 'toggleShareStatus') {
+        return state.map((list) =>
+          list.id === update.id
+            ? {
+                ...list,
+                shareStatus:
+                  list.shareStatus === ShareStatus.Public
+                    ? ShareStatus.Private
+                    : ShareStatus.Public,
+              }
+            : list,
+        );
+      } else if (update.type === 'toggleTodoFinished' && update.todoId) {
+        return state.map((list) =>
+          list.id === update.id
+            ? {
+                ...list,
+                Todo: list.Todo.map((todo) =>
+                  todo.id === update.todoId
+                    ? { ...todo, finished: !todo.finished }
+                    : todo,
+                ),
+              }
+            : list,
+        );
+      } else if (update.type === 'updateInfo') {
+        return state.map((list) =>
+          list.id === update.id
+            ? {
+                ...list,
+                title: update.title || list.title,
+                description: update.description,
+              }
+            : list,
+        );
+      }
+      return state;
+    },
+  );
+
   return (
     <div className="flex flex-col h-full justify-start lg:w-full text-xs md:text-lg lg:text-xl">
-      {todoList.map((todoList) => {
+      {optimisticTodoList.map((todoList) => {
         const isOpen = todoOpenState.find(
           (todoOpenState) => todoOpenState.todoListID === todoList.id,
         )?.isOpen;
         return (
           <div
             key={todoList.id}
-            className="flex flex-col lg:justify-between m-2 bg-white/5 outline outline-1 outline-gray-400/40 rounded-xl shadow-md"
+            className="flex flex-col lg:justify-between m-2 bg-white/5 outline-1 outline-gray-400/40 rounded-xl shadow-md"
           >
             <div className="flex flex-row justify-between items-center max-lg:flex-col my-4 mx-2 relative text-white">
               <TodoListEdit
-                className=" flex-grow flex max-lg:justify-between max-lg:text-lg *:ml-4 self-start max-lg:w-full max-lg:pr-2 max-lg:my-2"
+                className=" grow flex max-lg:justify-between max-lg:text-lg *:ml-4 self-start max-lg:w-full max-lg:pr-2 max-lg:my-2"
                 id={todoList.id}
                 defaulttitle={todoList.title}
                 isOwner={todoList.isOwner}
+                onOptimisticUpdate={updateOptimisticTodoList}
               ></TodoListEdit>
               <div className="*:rounded-3xl *:p-2 self-end">
                 <button
@@ -135,6 +190,10 @@ export function DropList({
                 {todoList.isOwner ? (
                   <button
                     onClick={() => {
+                      updateOptimisticTodoList({
+                        type: 'toggleShareStatus',
+                        id: todoList.id,
+                      });
                       const formData = new FormData();
                       formData.append('id', todoList.id.toString());
                       formData.append('type', 'shareStatus');
@@ -171,7 +230,7 @@ export function DropList({
             <div
               className={`flex flex-col ${
                 isOpen ? 'flex' : 'hidden'
-              } bg-white/5 outline outline-1 outline-gray-400/20 lg:m-4 max-lg:rounded-b-xl p-2 gap-2 rounded-lg`}
+              } bg-white/5 outline-1 outline-gray-400/20 lg:m-4 max-lg:rounded-b-xl p-2 gap-2 rounded-lg`}
               hidden={!isOpen}
             >
               {todoList.Todo.length === 0 ? (
@@ -183,7 +242,7 @@ export function DropList({
                   return (
                     <div
                       key={todo.id}
-                      className="flex flex-row justify-between items-center relative bg-white/5 rounded-lg p-2 outline outline-1 outline-gray-400/10"
+                      className="flex flex-row justify-between items-center relative bg-white/5 rounded-lg p-2 outline-1 outline-gray-400/10"
                     >
                       <div className="flex flex-row justify-around *:m-2 items-center overflow-hidden *:overflow-clip max-lg:*:max-w-36">
                         <h1 className="font-semibold text-lg text-white">
@@ -214,6 +273,11 @@ export function DropList({
                             todo.finished ? ' bg-green-500' : 'bg-red-500'
                           } p-2 rounded-lg`}
                           onClick={() => {
+                            updateOptimisticTodoList({
+                              type: 'toggleTodoFinished',
+                              id: todoList.id,
+                              todoId: todo.id,
+                            });
                             const formData = new FormData();
                             formData.append('id', todo.id.toString());
                             formData.append(

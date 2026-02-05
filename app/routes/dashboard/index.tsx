@@ -6,6 +6,7 @@ import {
   Link,
   LoaderFunctionArgs,
 } from 'react-router';
+import { useOptimistic } from 'react';
 import Calendar from '~/components/calendar';
 import { Todo } from '~/components/tododroplist';
 import { CircleDot, CircleDotDashed } from 'lucide-react';
@@ -31,7 +32,23 @@ export default function Dashboard() {
   const { todolists } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
 
+  // 樂觀更新 todolists
+  const [optimisticTodoLists, updateOptimisticTodoLists] = useOptimistic(
+    todolists,
+    (state, update: { todoId: number; finished: boolean }) => {
+      return state.map((todoList) => ({
+        ...todoList,
+        Todo: todoList.Todo.map((todo) =>
+          todo.id === update.todoId
+            ? { ...todo, finished: update.finished }
+            : todo,
+        ),
+      }));
+    },
+  );
+
   const handleFinishChange = async (todoId: number, finished: boolean) => {
+    updateOptimisticTodoLists({ todoId, finished });
     const formData = new FormData();
     formData.append('id', todoId.toString());
     formData.append('finished', finished.toString());
@@ -41,7 +58,7 @@ export default function Dashboard() {
     });
   };
 
-  const todoListData = todolists.reduce((acc, todoList) => {
+  const todoListData = optimisticTodoLists.reduce((acc, todoList) => {
     todoList.Todo.forEach((todo) => acc.push(todo));
     return acc;
   }, [] as Todo[]);
@@ -75,7 +92,7 @@ export default function Dashboard() {
       <div className="h-full text-white flex flex-col max-lg:grow max-lg:w-full w-1/3">
         {/* All Todo Lists */}
         <div className="bg-white/5 outline-1 outline-gray-400/40 grow overflow-y-auto lg:rounded-lg">
-          {todolists.map((todoList) => {
+          {optimisticTodoLists.map((todoList) => {
             if (todoList.Todo.length === 0) return null;
             return (
               <div key={todoList.id} className="m-4 overflow-clip">
