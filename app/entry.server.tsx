@@ -4,6 +4,7 @@
  * For more information, see https://remix.run/file-conventions/entry.server
  */
 
+import 'dotenv/config';
 import { PassThrough } from 'node:stream';
 
 import type { AppLoadContext, EntryContext } from 'react-router';
@@ -13,7 +14,7 @@ import { isbot } from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { db } from './services/db.server';
 import { event, chatSession } from 'db/schema';
-import { and, eq, lt, or } from 'drizzle-orm';
+import { and, eq, lt, or, isNotNull } from 'drizzle-orm';
 
 const ABORT_DELAY = 5_000;
 
@@ -135,27 +136,33 @@ function handleBrowserRequest(
 }
 
 async function deleteOldEventsFromDatabase() {
-  console.log('[DB] delete old events');
-  return await db
-    .delete(event)
-    .where(
-      and(
-        or(
-          and(lt(event.end_date, new Date()), eq(event.is_long_time, true)),
-          and(
-            lt(
-              event.end_date,
-              new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+  try {
+    console.log('[DB] delete old events');
+    return await db
+      .delete(event)
+      .where(
+        and(
+          isNotNull(event.end_date),
+          or(
+            and(lt(event.end_date, new Date()), eq(event.is_long_time, true)),
+            and(
+              lt(
+                event.end_date,
+                new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+              ),
+              eq(event.is_long_time, false),
             ),
-            eq(event.is_long_time, false),
           ),
+          eq(event.loop, false),
         ),
-        eq(event.loop, false),
-      ),
-    )
-    .returning({
-      id: event.id,
-    });
+      )
+      .returning({
+        id: event.id,
+      });
+  } catch (error) {
+    console.error('[DB] Failed to delete old events:', error);
+    return [];
+  }
 }
 
 async function getNextDate(date: Date, type: string) {
@@ -176,47 +183,59 @@ async function getNextDate(date: Date, type: string) {
 }
 
 async function updateRepeatEvents() {
-  console.log('[DB] update repeat events');
+  try {
+    console.log('[DB] update repeat events');
 
-  const events = await db
-    .select()
-    .from(event)
-    .where(
-      and(
-        eq(event.loop, true),
-        lt(event.end_date, new Date(new Date().getTime())),
-      ),
+    const events = await db
+      .select()
+      .from(event)
+      .where(
+        and(
+          eq(event.loop, true),
+          isNotNull(event.end_date),
+          lt(event.end_date, new Date(new Date().getTime())),
+        ),
+      );
+    await Promise.all(
+      events.map(async (eventData) => {
+        const Duration = eventData.loop_duration;
+        const nextStartDate = await getNextDate(
+          eventData.start_date!,
+          Duration!,
+        );
+        const nextEndDate = await getNextDate(eventData.end_date!, Duration!);
+        await db
+          .update(event)
+          .set({
+            start_date: nextStartDate,
+            end_date: nextEndDate,
+          })
+          .where(eq(event.id, eventData.id));
+      }),
     );
-  await Promise.all(
-    events.map(async (eventData) => {
-      const Duration = eventData.loop_duration;
-      const nextStartDate = await getNextDate(eventData.start_date!, Duration!);
-      const nextEndDate = await getNextDate(eventData.end_date!, Duration!);
-      await db
-        .update(event)
-        .set({
-          start_date: nextStartDate,
-          end_date: nextEndDate,
-        })
-        .where(eq(event.id, eventData.id));
-    }),
-  );
+  } catch (error) {
+    console.error('[DB] Failed to update repeat events:', error);
+  }
 }
 
 async function renewUserChatCounts() {
   let last = new Date().getTime();
   return (async () => {
-    if (new Date().getTime() - last < 60 * 60 * 1000) {
-      return;
+    try {
+      if (new Date().getTime() - last < 60 * 60 * 1000) {
+        return;
+      }
+      last = new Date().getTime();
+      console.log('[DB] renew user chat counts');
+      await db
+        .update(chatSession)
+        .set({
+          count: 5,
+        })
+        .where(eq(chatSession.count, 0));
+    } catch (error) {
+      console.error('[DB] Failed to renew user chat counts:', error);
     }
-    last = new Date().getTime();
-    console.log('[DB] renew user chat counts');
-    await db
-      .update(chatSession)
-      .set({
-        count: 5,
-      })
-      .where(eq(chatSession.count, 0));
   })();
 }
 

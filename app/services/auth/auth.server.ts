@@ -20,8 +20,8 @@ export const auth = betterAuth({
     'your-secret-key-change-this-in-production',
   socialProviders: {
     discord: {
-      clientId: process.env.DISCORD_CLIENT_ID || '',
-      clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
+      clientId: process.env.DISCORD_CLIENT_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
       redirectURI: `${process.env.BETTER_AUTH_URL || 'http://localhost:5173'}/api/auth/callback/discord`,
     },
   },
