@@ -152,7 +152,9 @@ export const event = schema.table('event', {
   loop: boolean('loop').default(false),
   loop_duration: loopDuration('loop_duration').default('daily'),
   end_date: timestamp('end_date'),
-  creater_id: integer('creater_id'),
+  creater_id: text('creater_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
 });
 
 export const ShareID = schema.table('ShareID', {

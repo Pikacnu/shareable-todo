@@ -15,6 +15,13 @@
       "when": 1770145159935,
       "tag": "0001_sad_leper_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770393032508,
+      "tag": "0002_rapid_maginty",
+      "breakpoints": true
     }
   ]
 }

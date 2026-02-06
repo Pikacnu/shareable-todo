@@ -38,13 +38,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const todoLists = await getTodoLists(userInfoFromDB.id);
     return {
       todolists: todoLists,
-      url: process.env.URL,
+      url: import.meta.env.URL,
     };
   } catch (e) {
     console.log(e);
     return {
       todolists: [],
-      url: process.env.URL,
+      url: import.meta.env.URL,
     };
   }
 };
