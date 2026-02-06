@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useOptimistic } from 'react';
 import {
   useFetcher,
   LoaderFunctionArgs,
@@ -142,6 +142,17 @@ export default function Add() {
       return alert('Title and description can not be blank');
     if (selectedTodoLists.length === 0)
       return alert('Please select a todo list');
+
+    updateOptimisticTodolistdata({
+      type: 'addTodo',
+      title,
+      description,
+      startDatetime,
+      endDatetime,
+      isToday,
+      selectedTodoLists,
+    });
+
     const formData = new FormData();
     Object.entries({
       title,
@@ -163,6 +174,54 @@ export default function Add() {
     else setIsDirty(false);
   };
   const { todolists, todolistdata } = useLoaderData<typeof loader>();
+
+  const [optimisticTodolistdata, updateOptimisticTodolistdata] = useOptimistic(
+    todolistdata,
+    (
+      state,
+      update: {
+        type: string;
+        title: string;
+        description: string;
+        startDatetime: string;
+        endDatetime: string;
+        isToday: boolean;
+        selectedTodoLists: TodoListInfo[];
+      },
+    ) => {
+      if (update.type === 'addTodo') {
+        return state.map((list) => {
+          if (
+            update.selectedTodoLists.some(
+              (selectedList) => selectedList.id === list.id,
+            )
+          ) {
+            return {
+              ...list,
+              Todo: [
+                ...list.Todo,
+                {
+                  id: -Date.now(),
+                  title: update.title,
+                  description: update.description,
+                  datetime: update.endDatetime,
+                  isToday:
+                    new Date(update.startDatetime).getDate() ===
+                    new Date(update.endDatetime).getDate(),
+                  finished: false,
+                  preview: true,
+                  startTime: update.startDatetime,
+                  endTime: update.endDatetime,
+                },
+              ],
+            };
+          }
+          return list;
+        });
+      }
+      return state;
+    },
+  );
 
   return (
     <div className="flex lg:flex-row flex-col w-full overflow-hidden overflow-y-auto lg:overflow-hidden md:m-2 h-full md:h-[85vh] justify-between lg:*:w-1/2 md:*:m-2 max-w-[100vw] relative">
@@ -418,9 +477,16 @@ export default function Add() {
           Preview — Lists
         </h2>
         <div className="space-y-4">
-          {todolistdata.map((todoList) => {
+          {optimisticTodolistdata.map((todoList) => {
             let Todo = todoList.Todo;
-            if (selectedTodoLists.some((data) => data.id === todoList.id))
+            // 只有在沒有提交過的情況下才顯示草稿預覽
+            const hasOptimisticTodo = todoList.Todo.some(
+              (todo) => todo.id < 0 && todo.preview,
+            );
+            if (
+              !hasOptimisticTodo &&
+              selectedTodoLists.some((data) => data.id === todoList.id)
+            ) {
               Todo = [
                 ...todoList.Todo,
                 {
@@ -435,6 +501,7 @@ export default function Add() {
                   preview: true,
                 },
               ];
+            }
             if (Todo.length === 0) return null;
             return (
               <div key={todoList.id} className="m-4 overflow-clip">
@@ -445,7 +512,11 @@ export default function Add() {
                   {Todo.map((todo) => (
                     <div
                       key={`todo-${todo.id}`}
-                      className={`bg-white/5 outline-1 outline-gray-400/40 rounded shadow p-3`}
+                      className={`bg-white/5 outline-1 outline-gray-400/40 rounded shadow p-3 ${
+                        todo.id < 0 && todo.preview
+                          ? 'opacity-70 animate-pulse'
+                          : ''
+                      }`}
                     >
                       <div className=" shrink grow">
                         <p className="text-xl font-bold text-white truncate">
